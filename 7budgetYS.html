@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>钛谷智变综合财务管理系统</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 引入ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <!-- 外部CSS -->
+    <link rel="stylesheet" href="assets/css/预算.css">
+    <link rel="icon"  type="image/png" href="assets/images/favicon.png">	
+
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Logo区域 -->
+        <div class="logo-container">
+            <a href="index.html">
+                <img src="assets/images/logo.png" alt="西部钛业" class="dashboard-logo">
+            </a>
+        </div>
+        
+        <!-- 顶部标题区域 -->
+        <header class="dashboard-header">
+            <h1>2024年度预算展板</h1>
+            <div class="header-subtitle">
+                <span>制表部门：财务部</span>
+                <span>制表日期：2023年12月15日</span>
+            </div>
+        </header>
+
+        <!-- 主要分析区域 -->
+        <main class="dashboard-content">
+            <!-- 预算对比图表 -->
+            <div class="analysis-section">
+                <div class="section-header">
+                    <h2 style="writing-mode: horizontal-tb;">预算对比分析</h2>
+                </div>
+                <div class="chart-container">
+                    <div id="budgetComparisonChart" class="chart"></div>
+                </div>
+            </div>
+
+            <!-- 指标分析区域 -->
+            <div class="analysis-section">
+                <div class="section-header">
+                    <h2><i class="icon metrics"></i>关键指标分析</h2>
+                </div>
+                <div class="chart-container">
+                    <div id="metricsRadarChart" class="chart"></div>
+                </div>
+            </div>
+
+            <!-- 关键指标卡片 -->
+            <div class="kpi-section">
+                <div class="section-header">
+                    <h2><i class="icon kpi"></i>核心指标卡片</h2>
+                </div>
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <div class="kpi-icon profitability"></div>
+                        <h3>盈利能力</h3>
+                        <div class="kpi-value">+18.7%</div>
+                        <div class="kpi-trend up">↑ 预算利润增长</div>
+                        <div class="kpi-description">预计净利润率提升至15.2%</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-icon operation"></div>
+                        <h3>营运能力</h3>
+                        <div class="kpi-value">9.8次</div>
+                        <div class="kpi-trend up">↑ 存货周转加速</div>
+                        <div class="kpi-description">预计周转率提升22%</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-icon solvency"></div>
+                        <h3>偿债能力</h3>
+                        <div class="kpi-value">1.85</div>
+                        <div class="kpi-trend up">↑ 流动比率优化</div>
+                        <div class="kpi-description">短期偿债能力增强</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-icon sustainability"></div>
+                        <h3>可持续发展</h3>
+                        <div class="kpi-value">+24.5%</div>
+                        <div class="kpi-trend up">↑ 研发投入增加</div>
+                        <div class="kpi-description">研发预算占比提升至15%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 部门预算分配 -->
+            <div class="analysis-section">
+                <div class="section-header">
+                    <h2><i class="icon allocation"></i>部门预算分配</h2>
+                </div>
+                <div class="chart-container">
+                    <div id="departmentAllocationChart" class="chart"></div>
+                </div>
+            </div>
+
+            
+            <!-- 预算明细 -->
+            <div class="analysis-section">
+                <div class="section-header">
+                    <h2><i class="icon allocation"></i>预算明细</h2>
+                </div>
+                <div class="chart-container">
+                    <div id="budgetDetailsChart" class="chart"></div>
+                </div>
+            </div>
+
+            <div class="analysis-section full-width">
+                <div class="section-header">
+                    <h2><i class="icon trend"></i>预算执行趋势</h2>
+                </div>
+                <div class="chart-container">
+                    <div id="budgetTrendChart" class="chart"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部信息区域 -->
+        <footer class="dashboard-footer">
+            <p>© 2024 公司财务分析系统 | 数据更新时间: 2024-12-15 14:30</p>
+            <div class="footer-links">
+                <a href="#">预算详情</a>
+                <a href="#">财务报告</a>
+                <a href="#">数据分析</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 外部JS -->
+    <script src="assets/js/预算.js"></script>
+</body>
+</html>

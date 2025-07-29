@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>钛谷智变综合财务管理系统 - 资金池</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="assets\css\资金池.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">智能资金池管理系统</h1>
+        
+        <!-- 控制面板 -->
+        <div class="control-panel">
+            <div class="input-group">
+                <label for="inflow-amount">注入金额 (万元)</label>
+                <input type="number" id="inflow-amount" placeholder="请输入注入金额" min="0" step="0.01">
+                <button id="inflow-btn" class="btn btn-inflow">注入资金</button>
+            </div>
+            
+            <div class="input-group">
+                <label for="outflow-amount">流出金额 (万元)</label>
+                <input type="number" id="outflow-amount" placeholder="请输入流出金额" min="0" step="0.01">
+                <button id="outflow-btn" class="btn btn-outflow">流出资金</button>
+            </div>
+        </div>
+        
+        <!-- 资金池显示区域 -->
+        <div class="pool-container">
+            <div class="pool-info">
+                <div class="info-item">
+                    <span class="label">当前余额:</span>
+                    <span id="current-balance" class="value">0.00</span>
+                    <span class="unit">万元</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">今日流入:</span>
+                    <span id="daily-inflow" class="value">0.00</span>
+                    <span class="unit">万元</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">今日流出:</span>
+                    <span id="daily-outflow" class="value">0.00</span>
+                    <span class="unit">万元</span>
+                </div>
+            </div>
+            
+            <!-- 水池主体 -->
+            <div class="pool-main">
+                <div class="pool-border">
+                    <div class="water-container">
+                        <div id="water-level" class="water-level">
+                            <div class="wave wave1"></div>
+                            <div class="wave wave2"></div>
+                            <div class="wave wave3"></div>
+                        </div>
+                    </div>
+                    <div class="pool-bottom"></div>
+                </div>
+                
+                <!-- 水位指示器 -->
+                <div class="level-indicator">
+                    <div class="indicator-line"></div>
+                    <span id="water-percentage" class="percentage">0%</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 交易记录 -->
+        <div class="transaction-log">
+            <h3>交易记录</h3>
+            <div id="log-container" class="log-container">
+                <div class="log-item">
+                     <span class="log-time">系统启动</span>
+                     <span class="log-desc">资金池初始化完成</span>
+                     <span class="log-amount">7314万元</span>
+                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets\js\资金池.js"></script>
+</body>
+</html>

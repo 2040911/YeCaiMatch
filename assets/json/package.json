@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "echarts": "^5.6.0",
+    "express": "^5.1.0",
+    "mssql": "^11.0.1"
+  },
+  "scripts": {
+    "start": "live-server --port=8080"
+  }
+}
+

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海绵钛市场套期保值决策分析展板</title>
+    <link rel="stylesheet" href="assets/css/WL/海绵钛.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- 头部信息展示区 -->
+        <header class="dashboard-header">
+            <h1>海绵钛市场价格监控</h1>
+            <div class="price-indicator">
+                <div class="price-box">
+                    <span class="price-label">海绵钛现货价格</span>
+                    <span class="price-value">46,500</span>
+                    <span class="price-unit">元/吨</span>
+                    <span class="price-change negative">↓2.8%</span>
+                </div>
+                <div class="price-box" onclick="window.location.href='15JG.html'" style="cursor: pointer;">
+                    <span class="price-label">钛精矿价格</span>
+                    <span class="price-value">1,720</span>
+                    <span class="price-unit">元/吨</span>
+                    <span class="price-change negative">↓1.5%</span>
+                </div>
+                <div class="price-box">
+                    <span class="price-label">期货主力合约</span>
+                    <span class="price-value">46,800</span>
+                    <span class="price-unit">元/吨</span>
+                    <span class="price-change positive">↑0.6%</span>
+                </div>
+            </div>
+            <div class="market-status">
+                <span class="status-tag negative">市场低迷</span>
+                <span class="status-tag">供应过剩</span>
+                <span class="status-tag">需求疲软</span>
+            </div>
+        </header>
+
+        <!-- 核心图表分析区 -->
+        <section class="chart-section">
+            <div class="chart-container full-width">
+                <h2>海绵钛价格走势分析 (2024年1月-7月)</h2>
+                <canvas id="priceTrendChart"></canvas>
+            </div>
+            
+            <div class="half-width-container">
+                <div class="chart-container">
+                    <h2>期货与现货价格对比</h2>
+                    <canvas id="futuresSpotChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h2>相关股票表现</h2>
+                    <canvas id="stocksChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 套期保值决策区 -->
+        <section class="decision-section">
+            <div class="strategy-box">
+                <h2>套期保值策略分析</h2>
+                <div class="strategy-content">
+                    <div class="strategy-reason">
+                        <h3>套保决策依据：</h3>
+                        <ul>
+                            <li>当前海绵钛价格处于年度低位（46,500元/吨）:cite[1]:cite[4]</li>
+                            <li>期货价格呈现升水结构（期货>现货）:cite[4]</li>
+                            <li>三季度末传统旺季预期可能推高价格:cite[1]</li>
+                            <li>主要生产商已开始减产（云南国钛减产30%）:cite[5]</li>
+                            <li>下游库存高位抑制短期需求:cite[2]</li>
+                        </ul>
+                    </div>
+                    <div class="strategy-action">
+                        <h3>推荐操作：</h3>
+                        <div class="recommendation">
+                            <span class="action-buy">买入期货合约</span>
+                            <span class="action-percent">70%采购量</span>
+                        </div>
+                        <div class="hedge-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">在期货市场买入9月到期的海绵钛合约</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">锁定70%计划采购量的价格</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">保留30%现货采购应对短期下跌风险</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="market-news">
+                <h2>最新市场动态</h2>
+                <ul class="news-list">
+                    <li>云南国钛宣布三季度减产30%，以应对库存压力:cite[5]</li>
+                    <li>海绵钛库存激增，宝鸡地区部分企业库存达千吨:cite[5]</li>
+                    <li>终端需求疲软，钛材企业开工率下降明显:cite[4]</li>
+                    <li>钛精矿进口量增加，7月环比增长57.82%:cite[6]</li>
+                    <li>航空领域用钛量持续增长，高端钛材需求稳定:cite[9]:cite[10]</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- 数据表格展示区 -->
+        <section class="data-section">
+            <h2>海绵钛市场供需数据</h2>
+            <div class="data-grid">
+                <div class="data-card">
+                    <div class="data-value">24万<span class="data-unit">吨</span></div>
+                    <div class="data-label">2024年海绵钛产量:cite[2]</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-value">5.18%</div>
+                    <div class="data-label">2024上半年产量增幅:cite[10]</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-value">30万<span class="data-unit">吨</span></div>
+                    <div class="data-label">2024年预计产量:cite[2]</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-value">4000<span class="data-unit">吨</span></div>
+                    <div class="data-label">核心地区库存量:cite[5]</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-value">-25%</div>
+                    <div class="data-label">6月消费量环比跌幅:cite[5]</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="assets/js/WL/海绵钛.js"></script>
+</body>
+</html>

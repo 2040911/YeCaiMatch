@@ -1,0 +1,636 @@
+/* assets/css/税务.css */
+:root {
+    --primary: #2c3e50;
+    --secondary: #34495e;
+    --accent: #3498db;
+    --success: #2ecc71;
+    --warning: #f39c12;
+    --danger: #e74c3c;
+    --light: #ecf0f1;
+    --dark: #2c3e50;
+    --gray: #95a5a6;
+    --metal-light: #bdc3c7;
+    --metal-dark: #7f8c8d;
+    --titanium: #878e94;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #000327, #000327);
+    color: #fff;
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(0, 0, 0, 0.4) !important; /* 保证与主菜单一致 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.dashboard-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--light);
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.date-display {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.user-info:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-container {
+    max-width: 1400px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* 汇总部分 */
+.summary-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.summary-card {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.summary-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--accent), #2980b9);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+}
+
+.summary-content h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--metal-light);
+    margin-bottom: 5px;
+}
+
+.summary-content p {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.summary-content span {
+    font-size: 0.85rem;
+    color: var(--success);
+    background: rgba(46, 204, 113, 0.15);
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+
+/* 预警部分 */
+.warning-section {
+    margin-bottom: 30px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+
+.section-header h2 {
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.warning-level {
+    display: flex;
+    gap: 15px;
+}
+
+.warning-level span {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.level-high {
+    background: rgba(231, 76, 60, 0.25);
+    color: #e74c3c;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.level-high:hover {
+    background: rgba(231, 76, 60, 0.4);
+    transform: scale(1.1);
+}
+
+.warning-card.highlight {
+    border: 2px solid #e74c3c;
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+    transition: all 0.3s ease;
+}
+
+.level-medium {
+    background: rgba(243, 156, 18, 0.25);
+    color: #f39c12;
+}
+
+.level-low {
+    background: rgba(46, 204, 113, 0.25);
+    color: #2ecc71;
+}
+
+.warning-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.warning-card {
+    display: flex;
+    padding: 20px;
+    border-radius: 15px;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.warning-card:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.warning-card.high {
+    border-left: 4px solid var(--danger);
+}
+
+.warning-card.medium {
+    border-left: 4px solid var(--warning);
+}
+
+.warning-card.low {
+    border-left: 4px solid var(--success);
+}
+
+.warning-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    border-radius: 50%;
+}
+
+.warning-card.high .warning-icon {
+    background: rgba(231, 76, 60, 0.2);
+    color: var(--danger);
+}
+
+.warning-card.medium .warning-icon {
+    background: rgba(243, 156, 18, 0.2);
+    color: var(--warning);
+}
+
+.warning-card.low .warning-icon {
+    background: rgba(46, 204, 113, 0.2);
+    color: var(--success);
+}
+
+.warning-content {
+    flex: 1;
+}
+
+.warning-content h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.warning-content p {
+    font-size: 0.95rem;
+    color: var(--metal-light);
+    margin-bottom: 10px;
+}
+
+.warning-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+.warning-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.warning-action button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--light);
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.warning-card.high .warning-action button {
+    background: rgba(231, 76, 60, 0.3);
+}
+
+.warning-card.medium .warning-action button {
+    background: rgba(243, 156, 18, 0.3);
+}
+
+.warning-action button:hover {
+    background: var(--accent);
+    transform: scale(1.05);
+}
+
+/* 税种分析部分 */
+.tax-section {
+    margin-top: 40px;
+}
+
+.tax-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+.tax-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.tax-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.tax-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tax-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+}
+
+.vat { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+.income-tax { background: rgba(155, 89, 182, 0.2); color: #9b59b6; }
+.resource-tax { background: rgba(230, 126, 34, 0.2); color: #e67e22; }
+.land-tax { background: rgba(39, 174, 96, 0.2); color: #27ae60; }
+.excise-tax { background: rgba(22, 160, 133, 0.2); color: #16a085; }
+.env-tax { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+
+.tax-header h3 {
+    flex: 1;
+    font-size: 1.3rem;
+}
+
+.tax-trend {
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.up { background: rgba(46, 204, 113, 0.15); color: #2ecc71; }
+.down { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+.stable { background: rgba(149, 165, 166, 0.15); color: #95a5a6; }
+
+.tax-amount {
+    margin-bottom: 20px;
+}
+
+.tax-amount p {
+    font-size: 0.95rem;
+    color: var(--metal-light);
+    margin-bottom: 5px;
+}
+
+.tax-amount h4 {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.tax-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.stat span {
+    font-size: 0.85rem;
+    color: var(--metal-light);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.stat p {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.tax-chart {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.chart-bar {
+    height: 100%;
+    border-radius: 5px;
+}
+
+.loading::after {
+    content: '...';
+    animation: dots 1s infinite;
+}
+
+.vat .chart-bar:nth-child(1) { background: #3498db; }
+.vat .chart-bar:nth-child(2) { background: #2980b9; }
+
+.income-tax .chart-bar:nth-child(1) { background: #9b59b6; }
+.income-tax .chart-bar:nth-child(2) { background: #8e44ad; }
+
+.resource-tax .chart-bar:nth-child(1) { background: #e67e22; }
+.resource-tax .chart-bar:nth-child(2) { background: #d35400; }
+
+.land-tax .chart-bar:nth-child(1) { background: #27ae60; }
+.land-tax .chart-bar:nth-child(2) { background: #2ecc71; }
+
+.excise-tax .chart-bar:nth-child(1) { background: #16a085; }
+.excise-tax .chart-bar:nth-child(2) { background: #1abc9c; }
+
+.env-tax .chart-bar:nth-child(1) { background: #2ecc71; }
+.env-tax .chart-bar:nth-child(2) { background: #27ae60; }
+
+/* 顶部主菜单背景与下方模块完全一致 */
+.alternat-main-menu {
+    background: rgba(0, 0, 0, 0.4) !important; /* 与 .dashboard-header 完全一致 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.3s;
+}
+
+.scroll_fixed .alternat-main-menu {
+    background: rgba(0, 0, 0, 0.7) !important; /* 滚动后与下方深色模块一致 */
+}
+
+/* 顶部主菜单实际背景色与下方模块完全一致 */
+.alternat_nav_area {
+    background: rgba(3, 0, 39, 0.4) !important;
+    transition: background 0.3s;
+}
+.scroll_fixed .alternat_nav_area {
+    background: rgba(3, 0, 39, 0.4) !important;
+}
+
+/* 底部样式 */
+.dashboard-footer {
+    max-width: 1400px;
+    margin: 50px auto 0;
+    padding: 25px 40px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-links a {
+    color: var(--metal-light);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--accent);
+}
+
+/* 全局字体颜色设置 */
+body, h1, h2, h3, h4, h5, h6, p, span, div, th, td, a, button, .summary-content h3, .summary-content p, .summary-content span, .section-header h2, .warning-level span, .warning-card, .warning-content h3, .warning-content p, .warning-meta, .warning-meta span, .warning-action button, .tax-header h3, .tax-trend, .tax-amount p, .tax-amount h4, .stat span, .stat p, .dashboard-footer, .footer-links a, .level-high, .level-medium, .level-low, .up, .down, .stable {
+    color: #fff !important;
+}
+
+/* 保证卡片、按钮等hover时依然为白色 */
+.summary-card:hover,
+.tax-card:hover,
+.warning-card:hover,
+.warning-action button:hover,
+.footer-links a:hover {
+    color: #fff !important;
+}
+
+/* 去除summary-content、tax-amount、stat等原有色值 */
+.summary-content h3,
+.summary-content p,
+.summary-content span,
+.tax-amount p,
+.stat span {
+    color: #fff !important;
+}
+
+/* 保证表格、卡片、警告、按钮等所有内容都为白色 */
+.dashboard-header h1,
+.dashboard-header,
+.header-info,
+.date-display,
+.user-info,
+.summary-content h3,
+.summary-content p,
+.summary-content span,
+.section-header h2,
+.warning-level span,
+.warning-card,
+.warning-content h3,
+.warning-content p,
+.warning-meta,
+.warning-meta span,
+.warning-action button,
+.tax-header h3,
+.tax-trend,
+.tax-amount p,
+.tax-amount h4,
+.stat span,
+.stat p,
+.dashboard-footer,
+.footer-links a {
+    color: #fff !important;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .dashboard-container {
+        padding: 0 15px;
+    }
+    
+    .tax-cards {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .header-info {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .warning-level {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .warning-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .warning-action {
+        align-self: flex-end;
+    }
+    
+    .dashboard-footer {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .summary-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .tax-cards {
+        grid-template-columns: 1fr;
+    }
+}

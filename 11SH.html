@@ -1,0 +1,1432 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>文件审核系统 - 西部钛业</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon Icon -->
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: url('assets/images/slider-bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            position: relative;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Logo样式 */
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.3));
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 80px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+
+        /* 文件列表区域 */
+        .file-review-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .file-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-icon {
+            font-size: 2rem;
+            color: #007bff;
+        }
+
+        .file-details h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .file-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .file-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-view {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* 统计信息 */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .stat-pending .stat-number { color: #ffc107; }
+        .stat-approved .stat-number { color: #28a745; }
+        .stat-rejected .stat-number { color: #dc3545; }
+        .stat-total .stat-number { color: #007bff; }
+        .stat-lan .stat-number { color: #667eea; }
+        
+        .stat-lan {
+            border-left: 4px solid #667eea;
+        }
+        
+        /* 局域网同步面板样式 */
+        .lan-sync-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+        }
+        
+        .lan-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-lan {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-lan:hover {
+            background: linear-gradient(135deg, #5a6fd8, #6a4190);
+            transform: translateY(-2px);
+        }
+        
+        .btn-sync {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-sync:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+        
+        .btn-discover {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-discover:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+        
+        .lan-status {
+            margin-left: auto;
+            padding: 8px 15px;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .lan-status.connected {
+            color: #28a745;
+        }
+        
+        .lan-status.disconnected {
+            color: #dc3545;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .main-content {
+                padding-top: 60px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .file-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .file-actions {
+                flex-wrap: wrap;
+            }
+
+            .logo {
+                width: 80px;
+            }
+        }
+
+        /* 文件上传区域 */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 2px dashed #007bff;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #0056b3;
+            background: #e9ecef;
+        }
+
+        .upload-area.dragover {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            color: #adb5bd;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* 上传进度 */
+        .upload-progress {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .upload-actions {
+            display: none;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .upload-file-info {
+            display: none;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .upload-file-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .upload-file-size {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .modal textarea {
+             width: 100%;
+             height: 100px;
+             padding: 10px;
+             border: 1px solid #ddd;
+             border-radius: 5px;
+             resize: vertical;
+             font-family: inherit;
+         }
+
+         .form-group {
+             margin-bottom: 15px;
+         }
+
+         .form-group label {
+             display: block;
+             margin-bottom: 5px;
+             font-weight: bold;
+             color: #2c3e50;
+         }
+
+         .form-group input {
+             width: 100%;
+             padding: 10px;
+             border: 1px solid #ddd;
+             border-radius: 5px;
+             font-family: inherit;
+             font-size: 14px;
+         }
+
+         .form-group input:focus {
+             outline: none;
+             border-color: #007bff;
+             box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+         }
+
+        .modal-actions {
+             display: flex;
+             gap: 10px;
+             justify-content: flex-end;
+             margin-top: 20px;
+         }
+
+         /* 文件查看器样式 */
+         .file-viewer-modal {
+             display: none;
+             position: fixed;
+             z-index: 2001;
+             left: 0;
+             top: 0;
+             width: 100%;
+             height: 100%;
+             background-color: rgba(0, 0, 0, 0.8);
+         }
+
+         .file-viewer-content {
+             background-color: #fefefe;
+             margin: 2% auto;
+             padding: 0;
+             border-radius: 10px;
+             width: 95%;
+             max-width: 1200px;
+             height: 90%;
+             position: relative;
+             overflow: hidden;
+         }
+
+         .file-viewer-header {
+             background: #f8f9fa;
+             padding: 20px;
+             border-bottom: 1px solid #dee2e6;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+
+         .file-viewer-title {
+             margin: 0;
+             color: #2c3e50;
+             font-size: 1.3rem;
+         }
+
+         .file-viewer-close {
+             font-size: 28px;
+             font-weight: bold;
+             cursor: pointer;
+             color: #aaa;
+             background: none;
+             border: none;
+         }
+
+         .file-viewer-close:hover {
+             color: #000;
+         }
+
+         .file-viewer-body {
+             height: calc(100% - 80px);
+             overflow: auto;
+             padding: 0;
+         }
+
+         .file-preview-container {
+             height: 100%;
+             display: flex;
+             flex-direction: column;
+         }
+
+         .file-preview-header {
+             padding: 20px;
+             background: #f8f9fa;
+             border-bottom: 1px solid #dee2e6;
+             display: flex;
+             align-items: center;
+         }
+
+         .file-preview-header h4 {
+             margin: 0 0 5px 0;
+             color: #2c3e50;
+         }
+
+         .file-preview-header p {
+             margin: 0;
+             color: #6c757d;
+             font-size: 0.9rem;
+         }
+
+         .pdf-viewer, .word-viewer {
+             flex: 1;
+             padding: 20px;
+             position: relative;
+         }
+
+         .pdf-viewer iframe {
+             border: 1px solid #dee2e6;
+             border-radius: 5px;
+         }
+
+         .document-content {
+             background: white;
+             padding: 30px;
+             border: 1px solid #dee2e6;
+             border-radius: 5px;
+             font-family: 'Times New Roman', serif;
+             line-height: 1.6;
+             max-height: 500px;
+             overflow-y: auto;
+         }
+
+         .document-section {
+             margin-bottom: 25px;
+         }
+
+         .document-section h3 {
+             color: #2c3e50;
+             border-bottom: 2px solid #007bff;
+             padding-bottom: 5px;
+             margin-bottom: 15px;
+         }
+
+         .document-section ul {
+             padding-left: 20px;
+         }
+
+         .document-section li {
+             margin-bottom: 8px;
+         }
+
+         .preview-note {
+             background: #e9ecef;
+             border: 1px solid #dee2e6;
+             border-radius: 5px;
+             padding: 15px;
+             margin-top: 20px;
+             text-align: center;
+             color: #6c757d;
+         }
+
+         .preview-note i {
+             margin-right: 8px;
+             color: #007bff;
+         }
+
+         .unsupported-file {
+             text-align: center;
+             padding: 60px 20px;
+             color: #6c757d;
+         }
+
+         .unsupported-file h3 {
+             color: #2c3e50;
+             margin-bottom: 15px;
+         }
+
+         .unsupported-file p {
+             margin-bottom: 30px;
+         }
+
+         @media (max-width: 768px) {
+             .file-viewer-content {
+                 width: 98%;
+                 height: 95%;
+                 margin: 1% auto;
+             }
+
+             .file-preview-header {
+                 flex-direction: column;
+                 align-items: flex-start;
+                 gap: 10px;
+             }
+
+             .document-content {
+                 padding: 20px;
+             }
+         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo-container">
+            <a href="index.html">
+                <img src="assets/images/logo.png" alt="西部钛业" class="logo">
+            </a>
+        </div>
+
+        <div class="main-content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-file-check"></i>
+                    文件审核系统
+                </h1>
+                <p class="page-subtitle">PDF / Word / Doc 文件审核管理</p>
+            </div>
+
+            <!-- 统计信息 -->
+            <div class="stats-section">
+                <div class="stat-card stat-total">
+                    <div class="stat-number" id="totalFiles">0</div>
+                    <div class="stat-label">总文件数</div>
+                </div>
+                <div class="stat-card stat-pending">
+                    <div class="stat-number" id="pendingFiles">0</div>
+                    <div class="stat-label">待审核</div>
+                </div>
+                <div class="stat-card stat-approved">
+                    <div class="stat-number" id="approvedFiles">0</div>
+                    <div class="stat-label">已通过</div>
+                </div>
+                <div class="stat-card stat-rejected">
+                    <div class="stat-number" id="rejectedFiles">0</div>
+                    <div class="stat-label">未通过</div>
+                </div>
+                <div class="stat-card stat-lan">
+                    <div class="stat-number" id="lanNodes">0</div>
+                    <div class="stat-label">局域网节点</div>
+                </div>
+            </div>
+            
+            <!-- 局域网同步控制面板 -->
+            <div class="lan-sync-panel">
+                <h2 class="section-title">
+                    <i class="fas fa-network-wired"></i>
+                    局域网审核同步
+                </h2>
+                <div class="lan-controls">
+                    <button class="btn btn-lan" onclick="openLanAuditSystem()">
+                        <i class="fas fa-external-link-alt"></i> 打开局域网审核系统
+                    </button>
+                    <button class="btn btn-sync" onclick="syncCurrentFile()">
+                        <i class="fas fa-sync-alt"></i> 同步当前审核
+                    </button>
+                    <button class="btn btn-discover" onclick="discoverLanNodes()">
+                        <i class="fas fa-search"></i> 发现网络节点
+                    </button>
+                    <span class="lan-status" id="lanStatus">
+                        <i class="fas fa-circle" style="color: #dc3545;"></i> 未连接
+                    </span>
+                </div>
+            </div>
+
+            <!-- 文件上传区域 -->
+            <div class="upload-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    文件上传
+                </h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">点击或拖拽文件到此处上传</div>
+                    <div class="upload-hint">支持 PDF、Word、Doc 格式文件</div>
+                    <input type="file" id="fileInput" class="file-input" accept=".pdf,.doc,.docx" multiple>
+                </div>
+                
+                <div class="upload-file-info" id="uploadFileInfo">
+                    <div class="upload-file-name" id="uploadFileName"></div>
+                    <div class="upload-file-size" id="uploadFileSize"></div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="uploadUploaderName">上传人姓名：</label>
+                        <input type="text" id="uploadUploaderName" placeholder="请输入您的姓名" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                </div>
+                
+                <div class="upload-progress" id="uploadProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">准备上传...</div>
+                </div>
+                
+                <div class="upload-actions" id="uploadActions">
+                    <button class="btn btn-approve" id="confirmUpload">
+                        <i class="fas fa-check"></i> 确认上传
+                    </button>
+                    <button class="btn btn-reject" id="cancelUpload">
+                        <i class="fas fa-times"></i> 取消上传
+                    </button>
+                </div>
+            </div>
+
+            <!-- 文件审核区域 -->
+            <div class="file-review-section">
+                <h2 class="section-title">
+                    <i class="fas fa-list-check"></i>
+                    文件列表
+                </h2>
+                <div class="file-list" id="fileList">
+                    <!-- 文件项将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 审核备注模态框 -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modalTitle">审核备注</h3>
+            <div class="form-group">
+                <label for="uploaderName">文件上传人姓名：</label>
+                <input type="text" id="uploaderName" placeholder="请输入上传人姓名" required>
+            </div>
+            <textarea id="reviewComment" placeholder="请输入审核备注（可选）..."></textarea>
+            <div class="modal-actions">
+                <button class="btn btn-approve" id="confirmApprove" style="display: none;">
+                    <i class="fas fa-check"></i> 确认通过
+                </button>
+                <button class="btn btn-reject" id="confirmReject" style="display: none;">
+                    <i class="fas fa-times"></i> 确认拒绝
+                </button>
+                <button class="btn" style="background: #6c757d; color: white;" onclick="closeModal()">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件查看器模态框 -->
+    <div id="fileViewerModal" class="file-viewer-modal">
+        <div class="file-viewer-content">
+            <div class="file-viewer-header">
+                <h3 id="fileViewerTitle" class="file-viewer-title">文件查看器</h3>
+                <button class="file-viewer-close" onclick="closeFileViewer()">&times;</button>
+            </div>
+            <div class="file-viewer-body">
+                <div id="fileViewerContent">
+                    <!-- 文件内容将在这里动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟文件数据
+        let files = [
+            {
+                id: 1,
+                name: "项目计划书.pdf",
+                type: "pdf",
+                size: "2.5 MB",
+                uploadDate: "2024-01-15",
+                uploader: "张三",
+                status: "pending",
+                comment: ""
+            },
+            {
+                id: 2,
+                name: "财务报告.docx",
+                type: "word",
+                size: "1.8 MB",
+                uploadDate: "2024-01-14",
+                uploader: "李四",
+                status: "approved",
+                comment: "文档格式规范，内容完整"
+            },
+            {
+                id: 3,
+                name: "技术方案.doc",
+                type: "word",
+                size: "3.2 MB",
+                uploadDate: "2024-01-13",
+                uploader: "王五",
+                status: "rejected",
+                comment: "技术方案需要进一步完善"
+            },
+            {
+                id: 4,
+                name: "合同文件.pdf",
+                type: "pdf",
+                size: "1.2 MB",
+                uploadDate: "2024-01-12",
+                uploader: "赵六",
+                status: "pending",
+                comment: ""
+            }
+        ];
+
+        let currentFileId = null;
+        let currentAction = null;
+        let selectedFile = null;
+        let uploadInProgress = false;
+
+        // 获取文件图标
+        function getFileIcon(type) {
+            switch(type) {
+                case 'pdf':
+                    return 'fas fa-file-pdf';
+                case 'word':
+                    return 'fas fa-file-word';
+                default:
+                    return 'fas fa-file';
+            }
+        }
+
+        // 获取状态显示
+        function getStatusDisplay(status) {
+            switch(status) {
+                case 'pending':
+                    return '<span class="file-status status-pending">待审核</span>';
+                case 'approved':
+                    return '<span class="file-status status-approved">已通过</span>';
+                case 'rejected':
+                    return '<span class="file-status status-rejected">未通过</span>';
+                default:
+                    return '<span class="file-status status-pending">未知</span>';
+            }
+        }
+
+        // 渲染文件列表
+        function renderFileList() {
+            const fileList = document.getElementById('fileList');
+            
+            if (files.length === 0) {
+                fileList.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 40px;">暂无文件需要审核</p>';
+                return;
+            }
+
+            fileList.innerHTML = files.map(file => `
+                <div class="file-item">
+                    <div class="file-header">
+                        <div class="file-info">
+                            <i class="${getFileIcon(file.type)} file-icon"></i>
+                            <div class="file-details">
+                                <h3>${file.name}</h3>
+                                <div class="file-meta">
+                                    大小: ${file.size} | 上传者: ${file.uploader} | 上传时间: ${file.uploadDate}
+                                </div>
+                            </div>
+                        </div>
+                        ${getStatusDisplay(file.status)}
+                    </div>
+                    
+                    ${file.uploaderName ? `<div style="background: #e3f2fd; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 4px solid #2196f3;"><strong>上传人:</strong> ${file.uploaderName}</div>` : ''}
+                    ${file.comment ? `<div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #007bff;"><strong>审核备注:</strong> ${file.comment}</div>` : ''}
+                    
+                    <div class="file-actions">
+                        <button class="btn btn-view" onclick="viewFile(${file.id})">
+                            <i class="fas fa-eye"></i> 查看文件
+                        </button>
+                        ${file.status === 'pending' ? `
+                            <button class="btn btn-approve" onclick="showReviewModal(${file.id}, 'approve')">
+                                <i class="fas fa-check"></i> 通过
+                            </button>
+                            <button class="btn btn-reject" onclick="showReviewModal(${file.id}, 'reject')">
+                                <i class="fas fa-times"></i> 不通过
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            const total = files.length;
+            const pending = files.filter(f => f.status === 'pending').length;
+            const approved = files.filter(f => f.status === 'approved').length;
+            const rejected = files.filter(f => f.status === 'rejected').length;
+
+            document.getElementById('totalFiles').textContent = total;
+            document.getElementById('pendingFiles').textContent = pending;
+            document.getElementById('approvedFiles').textContent = approved;
+            document.getElementById('rejectedFiles').textContent = rejected;
+        }
+
+        // 显示审核模态框
+        function showReviewModal(fileId, action) {
+            currentFileId = fileId;
+            currentAction = action;
+            
+            const modal = document.getElementById('reviewModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const confirmApprove = document.getElementById('confirmApprove');
+            const confirmReject = document.getElementById('confirmReject');
+            const reviewComment = document.getElementById('reviewComment');
+            const uploaderName = document.getElementById('uploaderName');
+            
+            if (action === 'approve') {
+                modalTitle.textContent = '审核通过';
+                confirmApprove.style.display = 'flex';
+                confirmReject.style.display = 'none';
+                reviewComment.placeholder = '请输入通过原因（可选）...';
+            } else {
+                modalTitle.textContent = '审核拒绝';
+                confirmApprove.style.display = 'none';
+                confirmReject.style.display = 'flex';
+                reviewComment.placeholder = '请输入拒绝原因（建议填写）...';
+            }
+            
+            // 清空输入框
+            reviewComment.value = '';
+            uploaderName.value = '';
+            
+            modal.style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+            document.getElementById('reviewComment').value = '';
+            document.getElementById('uploaderName').value = '';
+            currentFileId = null;
+            currentAction = null;
+        }
+
+        // 确认审核
+        function confirmReview() {
+            if (!currentFileId || !currentAction) return;
+            
+            const uploaderName = document.getElementById('uploaderName').value.trim();
+            const comment = document.getElementById('reviewComment').value.trim();
+            const file = files.find(f => f.id === currentFileId);
+            
+            // 验证上传人姓名是否填写
+            if (!uploaderName) {
+                alert('请填写文件上传人姓名');
+                document.getElementById('uploaderName').focus();
+                return;
+            }
+            
+            if (file) {
+                file.status = currentAction === 'approve' ? 'approved' : 'rejected';
+                file.comment = comment || (currentAction === 'approve' ? '审核通过' : '审核未通过');
+                file.uploaderName = uploaderName;
+                file.reviewDate = new Date().toLocaleDateString();
+                
+                renderFileList();
+                updateStats();
+                closeModal();
+                
+                // 显示成功消息
+                alert(`文件 "${file.name}" 已${currentAction === 'approve' ? '通过' : '不通过'}审核\n上传人：${uploaderName}`);
+            }
+        }
+
+        // 查看文件
+        function viewFile(fileId) {
+            const file = files.find(f => f.id === fileId);
+            if (file) {
+                showFileViewer(file);
+            }
+        }
+
+        // 显示文件查看器
+        function showFileViewer(file) {
+            const modal = document.getElementById('fileViewerModal');
+            const modalTitle = document.getElementById('fileViewerTitle');
+            const fileViewer = document.getElementById('fileViewerContent');
+            
+            modalTitle.textContent = `查看文件: ${file.name}`;
+            
+            // 根据文件类型显示不同的预览内容
+            if (file.type === 'pdf') {
+                fileViewer.innerHTML = `
+                    <div class="file-preview-container">
+                        <div class="file-preview-header">
+                            <i class="fas fa-file-pdf" style="color: #dc3545; font-size: 2rem; margin-right: 10px;"></i>
+                            <div>
+                                <h4>${file.name}</h4>
+                                <p>文件大小: ${file.size} | 上传时间: ${file.uploadDate}</p>
+                            </div>
+                        </div>
+                        <div class="pdf-viewer">
+                            <iframe src="https://mozilla.github.io/pdf.js/web/viewer.html?file=https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf" 
+                                    width="100%" height="600px" frameborder="0">
+                            </iframe>
+                            <div class="preview-note">
+                                <i class="fas fa-info-circle"></i>
+                                这是PDF预览示例。实际项目中，这里会显示真实的PDF文件内容。
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (file.type === 'word') {
+                fileViewer.innerHTML = `
+                    <div class="file-preview-container">
+                        <div class="file-preview-header">
+                            <i class="fas fa-file-word" style="color: #2b579a; font-size: 2rem; margin-right: 10px;"></i>
+                            <div>
+                                <h4>${file.name}</h4>
+                                <p>文件大小: ${file.size} | 上传时间: ${file.uploadDate}</p>
+                            </div>
+                        </div>
+                        <div class="word-viewer">
+                            <div class="document-content">
+                                <h2 style="color: #2c3e50; margin-bottom: 20px;">文档预览</h2>
+                                <div class="document-section">
+                                    <h3>1. 项目概述</h3>
+                                    <p>本文档包含了项目的详细信息和相关数据。在实际应用中，这里会显示Word文档的真实内容。</p>
+                                </div>
+                                <div class="document-section">
+                                    <h3>2. 主要内容</h3>
+                                    <ul>
+                                        <li>项目背景和目标</li>
+                                        <li>技术方案和实施计划</li>
+                                        <li>预算和资源分配</li>
+                                        <li>风险评估和应对措施</li>
+                                    </ul>
+                                </div>
+                                <div class="document-section">
+                                    <h3>3. 结论</h3>
+                                    <p>通过详细的分析和规划，本项目具有良好的可行性和预期效果。</p>
+                                </div>
+                            </div>
+                            <div class="preview-note">
+                                <i class="fas fa-info-circle"></i>
+                                这是Word文档预览示例。实际项目中，可以集成Office Online或其他文档预览服务。
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                fileViewer.innerHTML = `
+                    <div class="file-preview-container">
+                        <div class="file-preview-header">
+                            <i class="fas fa-file" style="color: #6c757d; font-size: 2rem; margin-right: 10px;"></i>
+                            <div>
+                                <h4>${file.name}</h4>
+                                <p>文件大小: ${file.size} | 上传时间: ${file.uploadDate}</p>
+                            </div>
+                        </div>
+                        <div class="unsupported-file">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ffc107; margin-bottom: 20px;"></i>
+                            <h3>暂不支持此文件类型的在线预览</h3>
+                            <p>请下载文件后使用相应的应用程序打开。</p>
+                            <button class="btn btn-view" onclick="downloadFile(${file.id})">
+                                <i class="fas fa-download"></i> 下载文件
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // 关闭文件查看器
+        function closeFileViewer() {
+            document.getElementById('fileViewerModal').style.display = 'none';
+        }
+
+        // 下载文件
+        function downloadFile(fileId) {
+            const file = files.find(f => f.id === fileId);
+            if (file) {
+                alert(`开始下载文件: ${file.name}`);
+                // 这里可以实现真实的文件下载功能
+            }
+        }
+
+        // 文件上传相关函数
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function getFileType(fileName) {
+            const extension = fileName.split('.').pop().toLowerCase();
+            if (extension === 'pdf') return 'pdf';
+            if (['doc', 'docx'].includes(extension)) return 'word';
+            return 'unknown';
+        }
+
+        function showUploadInfo(file) {
+            selectedFile = file;
+            document.getElementById('uploadFileName').textContent = file.name;
+            document.getElementById('uploadFileSize').textContent = formatFileSize(file.size);
+            document.getElementById('uploadFileInfo').style.display = 'block';
+            document.getElementById('uploadActions').style.display = 'flex';
+        }
+
+        function hideUploadInfo() {
+            selectedFile = null;
+            document.getElementById('uploadFileInfo').style.display = 'none';
+            document.getElementById('uploadActions').style.display = 'none';
+            document.getElementById('uploadProgress').style.display = 'none';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '准备上传...';
+            document.getElementById('uploadUploaderName').value = '';
+        }
+
+        function simulateUpload() {
+            if (!selectedFile || uploadInProgress) return;
+            
+            // 验证上传人姓名
+            const uploaderName = document.getElementById('uploadUploaderName').value.trim();
+            if (!uploaderName) {
+                alert('请填写上传人姓名');
+                return;
+            }
+            
+            uploadInProgress = true;
+            document.getElementById('uploadProgress').style.display = 'block';
+            document.getElementById('uploadActions').style.display = 'none';
+            
+            let progress = 0;
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                progressText.textContent = `上传中... ${Math.round(progress)}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressText.textContent = '上传完成！';
+                    
+                    // 添加到文件列表
+                    const newFile = {
+                        id: files.length + 1,
+                        name: selectedFile.name,
+                        type: getFileType(selectedFile.name),
+                        size: formatFileSize(selectedFile.size),
+                        uploadDate: new Date().toISOString().split('T')[0],
+                        uploader: uploaderName,
+                        status: "pending",
+                        comment: ""
+                    };
+                    
+                    files.unshift(newFile);
+                    renderFileList();
+                    updateStats();
+                    
+                    setTimeout(() => {
+                        hideUploadInfo();
+                        uploadInProgress = false;
+                        alert('文件上传成功！');
+                    }, 1000);
+                }
+            }, 200);
+        }
+
+        function cancelUpload() {
+            if (uploadInProgress) {
+                uploadInProgress = false;
+                alert('上传已取消');
+            }
+            hideUploadInfo();
+        }
+
+        // 局域网同步功能
+        let lanNodes = 0;
+        let lanConnected = false;
+        
+        function openLanAuditSystem() {
+            // 打开局域网审核系统
+            const lanUrl = 'http://localhost:3000/12LAN_AUDIT.html';
+            window.open(lanUrl, '_blank');
+            alert('正在打开局域网审核系统...');
+        }
+        
+        function syncCurrentFile() {
+            if (!lanConnected) {
+                alert('请先连接到局域网节点');
+                return;
+            }
+            
+            // 模拟同步当前审核
+            const pendingFiles = files.filter(f => f.status === 'pending');
+            if (pendingFiles.length === 0) {
+                alert('没有待审核的文件需要同步');
+                return;
+            }
+            
+            alert(`正在同步 ${pendingFiles.length} 个待审核文件到局域网节点...`);
+            
+            // 模拟同步过程
+            setTimeout(() => {
+                alert('文件同步完成！');
+            }, 2000);
+        }
+        
+        function discoverLanNodes() {
+            const statusElement = document.getElementById('lanStatus');
+            const lanNodesElement = document.getElementById('lanNodes');
+            
+            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin" style="color: #ffc107;"></i> 搜索中...';
+            
+            // 模拟网络发现过程
+            setTimeout(() => {
+                lanNodes = Math.floor(Math.random() * 5) + 1;
+                lanConnected = lanNodes > 0;
+                
+                lanNodesElement.textContent = lanNodes;
+                
+                if (lanConnected) {
+                    statusElement.innerHTML = '<i class="fas fa-circle" style="color: #28a745;"></i> 已连接';
+                    statusElement.className = 'lan-status connected';
+                    alert(`发现 ${lanNodes} 个局域网节点，连接成功！`);
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-circle" style="color: #dc3545;"></i> 未连接';
+                    statusElement.className = 'lan-status disconnected';
+                    alert('未发现可用的局域网节点');
+                }
+            }, 3000);
+        }
+        
+        // 初始化局域网状态
+        function initLanStatus() {
+            document.getElementById('lanNodes').textContent = lanNodes;
+        }
+
+        // 事件监听
+        document.addEventListener('DOMContentLoaded', function() {
+            renderFileList();
+            updateStats();
+            initLanStatus();
+            
+            // 文件上传事件
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            uploadArea.addEventListener('click', () => {
+                if (!uploadInProgress) {
+                    fileInput.click();
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    showUploadInfo(file);
+                }
+            });
+            
+            // 拖拽上传
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (!uploadInProgress) {
+                    uploadArea.classList.add('dragover');
+                }
+            });
+            
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                if (!uploadInProgress) {
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        showUploadInfo(file);
+                    }
+                }
+            });
+            
+            // 上传按钮事件
+            document.getElementById('confirmUpload').addEventListener('click', simulateUpload);
+            document.getElementById('cancelUpload').addEventListener('click', cancelUpload);
+            
+            // 模态框事件
+            document.querySelector('.close').onclick = closeModal;
+            document.getElementById('confirmApprove').onclick = confirmReview;
+            document.getElementById('confirmReject').onclick = confirmReview;
+            
+            // 点击模态框外部关闭
+             window.onclick = function(event) {
+                 const reviewModal = document.getElementById('reviewModal');
+                 const fileViewerModal = document.getElementById('fileViewerModal');
+                 
+                 if (event.target === reviewModal) {
+                     closeModal();
+                 }
+                 
+                 if (event.target === fileViewerModal) {
+                     closeFileViewer();
+                 }
+             }
+        });
+    </script>
+</body>
+</html>

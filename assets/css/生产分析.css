@@ -1,0 +1,491 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+}
+
+body {
+    color: #111;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 统一主色调（与“钛·数据，智·未来”一致，深蓝+高亮蓝+白色） */
+:root {
+    --main-bg: #1a2a47;
+    --main-bg-dark: #16203a;
+    --main-blue: #1a75bc;
+    --main-blue-light: #4db8ff;
+    --main-white: #fff;
+    --main-gray: #eaf6ff;
+}
+
+/* 头部样式 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-icon {
+    font-size: 2.8rem;
+    color: #4db8ff;
+    margin-right: 15px;
+}
+
+.logo-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #111;
+    /* text-shadow: 0 0 10px rgba(77, 184, 255, 0.5); 取消外发光 */
+}
+
+.logo-subtext {
+    font-size: 1rem;
+    color: #a0d0ff;
+    margin-top: 5px;
+    letter-spacing: 1px;
+}
+
+.date-time {
+    background: rgba(0, 40, 80, 0.6);
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #e0f0ff;
+    border: 1px solid rgba(77, 184, 255, 0.3);
+}
+
+/* 主标题样式 */
+.page-title {
+    text-align: center;
+    margin: 30px 0 40px;
+}
+
+.page-title h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 15px;
+    /* text-shadow: 0 0 15px rgba(77, 184, 255, 0.7); 取消外发光 */
+}
+
+.page-title p {
+    font-size: 1.3rem;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* 生产数据面板 */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #1a75bc, #4db8ff);
+}
+
+.card-title {
+    font-size: 1.4rem;
+    color: #1a3a5f;
+    margin-bottom: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.card-title i {
+    margin-right: 10px;
+    color: #1a75bc;
+    font-size: 1.5rem;
+}
+
+.input-group {
+    margin-bottom: 16px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #2c5282;
+    font-weight: 500;
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #d1e7ff;
+    border-radius: 7px;
+    font-size: 1rem;
+    color: #111;
+    transition: border-color 0.2s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #4db8ff;
+}
+
+.product-grid {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.product-card {
+    flex: 1 1 0;
+    background: #eaf6ff;
+    border-radius: 8px;
+    padding: 10px 0;
+    text-align: center;
+    border: 1px solid #d1e7ff;
+}
+
+.product-card h4 {
+    color: #1a3a5f;
+    margin-bottom: 6px;
+    font-size: 1.1rem;
+}
+
+.product-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a75bc;
+}
+
+.product-label {
+    font-size: 0.9rem;
+    color: #5a7ca8;
+}
+
+/* 生产分析与成本预测区域美化 */
+.alternat_feature_area {
+    background: linear-gradient(135deg, var(--main-bg-dark) 60%, var(--main-blue) 100%);
+    padding: 48px 0 32px 0;
+}
+.alternat_feature_area .witr_section_title .page-title h1,
+.alternat_feature_area .witr_section_title .page-title p {
+    color: var(--main-white);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.alternat_feature_area .witr_section_title .page-title h1 {
+    font-size: 2.6rem !important; /* 比原来大一号 */
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #111 !important;
+}
+.alternat_feature_area .witr_section_title .page-title p {
+    font-size: 1.35rem !important; /* 比原来大一号 */
+    margin-top: 12px;
+    opacity: 1;
+    color: #222 !important;
+}
+
+/* 4. 成本预测部分美化 */
+.cost-prediction {
+    background: linear-gradient(135deg, var(--main-bg-dark) 60%, var(--main-blue) 100%);
+    border-radius: 18px;
+    margin: 40px auto 0 auto;
+    padding: 36px 24px 32px 24px;
+    color: var(--main-white);
+    box-shadow: 0 4px 24px rgba(26,42,71,0.13);
+    max-width: 1200px;
+}
+.cost-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.cost-header i {
+    font-size: 2rem;
+    color: var(--main-blue-light);
+    margin-right: 12px;
+}
+.cost-header h2 {
+    color: var(--main-white);
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+.cost-grid {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+.cost-card {
+    flex: 1 1 0;
+    min-width: 220px;
+    background: var(--main-blue);
+    border-radius: 12px;
+    padding: 22px 18px 16px 18px;
+    color: var(--main-white);
+    box-shadow: 0 2px 8px rgba(26,117,188,0.08);
+    border: 1px solid var(--main-blue-light);
+}
+.cost-card h3 {
+    font-size: 1.1rem;
+    color: var(--main-white);
+    margin-bottom: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+.cost-card h3 i {
+    margin-right: 8px;
+    color: var(--main-blue-light);
+}
+.cost-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--main-blue-light);
+    margin-bottom: 10px;
+}
+.cost-details {
+    font-size: 0.98rem;
+    color: #eaf6ff;
+}
+.cost-details span {
+    color: #eaf6ff;
+}
+.prediction-result {
+    background: var(--main-blue);
+    border-radius: 10px;
+    padding: 18px 0 10px 0;
+    margin-top: 18px;
+    text-align: center;
+    color: var(--main-white);
+    box-shadow: 0 2px 8px rgba(26,117,188,0.08);
+}
+.prediction-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--main-white);
+}
+.prediction-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--main-blue-light);
+    margin: 10px 0 6px 0;
+}
+.prediction-desc {
+    font-size: 1.05rem;
+    color: #eaf6ff;
+}
+
+/* 5. 按钮美化 */
+.btn, .cost-prediction .btn {
+    background: linear-gradient(90deg, var(--main-blue-light) 60%, var(--main-blue) 100%);
+    color: var(--main-white) !important;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 18px;
+    box-shadow: 0 2px 8px rgba(26,117,188,0.13);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.btn:hover, .cost-prediction .btn:hover {
+    background: linear-gradient(90deg, var(--main-blue) 60%, var(--main-blue-light) 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(26,117,188,0.18);
+}
+
+/* 成本预测按钮居中 */
+.cost-prediction .btn {
+    display: block;
+    margin: 28px auto 0 auto;
+    text-align: center;
+    float: none;
+}
+
+/* 并排卡片布局 */
+.dashboard-flex {
+    display: flex;
+    gap: 32px;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+.dashboard-flex .card {
+    flex: 1 1 0;
+    min-width: 320px;
+    max-width: 33%;
+    background: var(--main-bg-dark);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(26,42,71,0.13);
+    border: 1.5px solid var(--main-blue);
+    padding: 32px 24px 24px 24px;
+    color: var(--main-white);
+    margin-bottom: 0;
+    position: relative;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.dashboard-flex .card:hover {
+    box-shadow: 0 8px 32px rgba(26,117,188,0.18);
+    transform: translateY(-4px) scale(1.02);
+}
+@media (max-width: 1100px) {
+    .dashboard-flex {
+        flex-direction: column;
+        gap: 18px;
+    }
+    .dashboard-flex .card {
+        max-width: 100%;
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .logo {
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    
+    .page-title h1 {
+        font-size: 2.2rem;
+    }
+    
+    .page-title p {
+        font-size: 1.1rem;
+    }
+    
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+    
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+    .product-grid {
+        flex-direction: column;
+    }
+
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 0.6s ease forwards;
+}
+
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+
+/* 其它细节美化 */
+.footer {
+    background: var(--main-bg-dark);
+    color: #b8d6f7;
+    text-align: center;
+    padding: 18px 0 8px 0;
+    margin-top: 40px;
+    border-radius: 0 0 12px 12px;
+    font-size: 0.98rem;
+    letter-spacing: 1px;
+}
+
+/* 设备数据录入、生产数据分析、设备运行状态卡片及内容字体全白 */
+.dashboard-flex .card,
+.dashboard-flex .card *,
+.dashboard-flex .card .input-group label,
+.dashboard-flex .card .input-field,
+.dashboard-flex .card .product-card h4,
+.dashboard-flex .card .product-value,
+.dashboard-flex .card .product-label {
+    color: #fff !important;
+}
+
+/* 成本预测部分所有内容全白 */
+.cost-prediction,
+.cost-prediction *,
+.cost-prediction .cost-header,
+.cost-prediction .cost-header h2,
+.cost-prediction .cost-header i,
+.cost-prediction .cost-card,
+.cost-prediction .cost-card *,
+.cost-prediction .cost-details span,
+.cost-prediction .prediction-result,
+.cost-prediction .prediction-title,
+.cost-prediction .prediction-value,
+.cost-prediction .prediction-desc {
+    color: #fff !important;
+}
+
+/* 输入框字体白色，背景透明或主题色 */
+.dashboard-flex .card .input-field {
+    color: #fff !important;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid #4db8ff;
+}
+.dashboard-flex .card .input-field::placeholder {
+    color: #eaf6ff !important;
+    opacity: 1;
+}
+
+/* 钛板/钛棒/钛管卡片为白底黑字 */
+.dashboard-flex .card .product-card {
+    background: #fff !important;
+    border: 1.5px solid #4db8ff;
+    color: #111 !important;
+    box-shadow: 0 2px 8px rgba(26,117,188,0.08);
+}
+.dashboard-flex .card .product-card h4,
+.dashboard-flex .card .product-card .product-value,
+.dashboard-flex .card .product-card .product-label {
+    color: #111 !important;
+}

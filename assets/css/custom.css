@@ -1,0 +1,18 @@
+/* 自定义CSS样式 - 已恢复原始导航菜单结构 */
+
+/* 移除首页居中样式，恢复默认导航菜单布局 */
+.alternat_menu > ul {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* 移动端菜单调整 */
+@media only screen and (max-width: 991px) {
+    .mean-container .mean-nav ul li.menu-item-has-children:first-child {
+        position: relative;
+        left: auto;
+        transform: none;
+        top: auto;
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "name": "western-titanium/management-system",
+    "description": "Western Titanium Enterprise Management System - A comprehensive business management platform",
+    "type": "project",
+    "keywords": ["management", "enterprise", "titanium", "business", "dashboard"],
+    "homepage": "https://western0914.tech",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Western Titanium Team",
+            "email": "admin@western0914.tech"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "WesternTitanium\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WesternTitanium\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "serve": "php -S localhost:8000 -t ."
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

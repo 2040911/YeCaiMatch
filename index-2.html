@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中游钛材原料供应商分级大数据展台</title>
+    <!-- 引入ECharts -->
+    <script src="assets/js/vendor/echarts.min.js"></script>
+    <!-- 引入中国地图数据 -->
+    <script src="assets/js/WL/china.js"></script>
+    <!-- 引入外部样式表 -->
+    <link rel="stylesheet" href="assets/css/供应商.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="logo-container">
+                <a href="index.html">
+                    <img src="assets/images/logo.png" alt="西部钛业">
+                </a>
+            </div>
+            <h1>中游钛材原料供应商分级大数据展台</h1>
+            <div class="time-display" id="current-time"></div>
+        </header>
+
+        <div class="dashboard-content">
+            <div class="row">
+                <div class="chart-container full-width">
+                    <div class="chart-title">供应商等级分布</div>
+                    <div id="supplier-level-chart" class="chart"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="chart-container half-width">
+                    <div class="chart-title">供应商地域分布</div>
+                    <div id="supplier-region-chart" class="chart"></div>
+                </div>
+                <div class="chart-container half-width">
+                    <div class="chart-title">供应商合作年限分布</div>
+                    <div id="supplier-years-chart" class="chart"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="chart-container half-width">
+                    <div class="chart-title">供应商质量评级</div>
+                    <div id="supplier-quality-chart" class="chart"></div>
+                </div>
+                <div class="chart-container half-width">
+                    <div class="chart-title">供应商交货准时率</div>
+                    <div id="supplier-delivery-chart" class="chart"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="chart-container full-width">
+                    <div class="chart-title">TOP 10供应商综合评分</div>
+                    <div id="supplier-top10-chart" class="chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="dashboard-footer">
+            <p>数据更新时间: <span id="update-time">2024-11-15 15:30:45</span></p>
+            <p>© 2024 钛材供应链大数据分析平台</p>
+        </footer>
+    </div>
+
+    <!-- 引入外部JavaScript文件 -->
+    <script src="assets/js/供应商.js"></script>
+</body>
+</html>

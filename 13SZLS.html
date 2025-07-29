@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字孪生与MES集成系统</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            position: relative;
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+        
+        .header-logo img {
+            height: 40px;
+            width: auto;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .header-logo img:hover {
+            transform: scale(1.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            color: #a0d2eb;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .model-container {
+            width: 100%;
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            height: 70vh;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+        
+        #model-view {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            background: rgba(0, 30, 60, 0.8);
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        .control-btn {
+            background: linear-gradient(45deg, #00b4db, #0083b0);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 180, 219, 0.4);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .panel-container {
+            display: flex;
+            flex-direction: row;
+            gap: 25px;
+            width: 100%;
+        }
+        
+        .data-panel {
+            flex: 1;
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+        
+        .panel-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #40e0d0;
+        }
+        
+        .panel-title i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .panel-title h2 {
+            font-size: 1.4rem;
+        }
+        
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        @media (max-width: 1400px) {
+            .params-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .param-card {
+            background: rgba(0, 40, 80, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #00c9ff;
+        }
+        
+        .param-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .param-name {
+            font-weight: 600;
+            color: #a0d2eb;
+        }
+        
+        .param-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 10px 0;
+            color: #92fe9d;
+        }
+        
+        .param-unit {
+            text-align: right;
+            color: #a0d2eb;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            height: 250px;
+            position: relative;
+            margin-top: 15px;
+        }
+        
+        .import-panel {
+            flex: 1;
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+        
+        /* 手动输入区域样式 */
+        .manual-input-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 30, 60, 0.8);
+            border-radius: 10px;
+            border: 1px solid #40e0d0;
+        }
+        
+        .manual-input-section h3 {
+            color: #40e0d0;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #40e0d0;
+            padding-bottom: 10px;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            color: #a0d2eb;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            padding: 10px;
+            border: 1px solid #40e0d0;
+            border-radius: 5px;
+            background: rgba(0, 40, 80, 0.6);
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #00c9ff;
+            box-shadow: 0 0 10px rgba(64, 224, 208, 0.3);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .calculate-btn:hover {
+            background: linear-gradient(45deg, #20c997, #17a2b8);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        /* 成本分析结果样式 */
+        .cost-analysis-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 30, 60, 0.9);
+            border-radius: 10px;
+            border: 1px solid #28a745;
+        }
+        
+        .cost-analysis-section h3 {
+            color: #28a745;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+        }
+        
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(0, 40, 80, 0.6);
+            border-radius: 8px;
+            border-left: 4px solid #40e0d0;
+        }
+        
+        .cost-item.total-cost {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.1);
+        }
+        
+        .cost-item.unit-cost {
+            border-left-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+        
+        .cost-label {
+            color: #a0d2eb;
+            font-weight: 500;
+        }
+        
+        .cost-value {
+            color: #92fe9d;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .cost-unit {
+            color: #40e0d0;
+            font-size: 0.9rem;
+        }
+        
+        .cost-chart-container {
+            height: 300px;
+            background: rgba(0, 40, 80, 0.6);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #40e0d0;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(0, 40, 80, 0.3);
+        }
+        
+        .upload-area:hover {
+            background: rgba(0, 60, 120, 0.4);
+        }
+        
+        .upload-area i {
+            font-size: 3rem;
+            color: #40e0d0;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .simulate-btn {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .simulate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 210, 255, 0.4);
+        }
+        
+        .status-panel {
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+        
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .status-title {
+            color: #40e0d0;
+            font-size: 1.3rem;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+        }
+        
+        .indicator-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            margin-right: 8px;
+        }
+        
+        .status-text {
+            color: #92fe9d;
+            font-weight: 600;
+        }
+        
+        .log-container {
+            background: rgba(0, 30, 60, 0.6);
+            border-radius: 8px;
+            padding: 15px;
+            height: 150px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .log-entry {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .log-time {
+            color: #00c9ff;
+            margin-right: 10px;
+        }
+        
+        .log-message {
+            color: #e0e0e0;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .model-container {
+                height: 500px;
+            }
+        }
+        
+        /* MES系统展板样式 */
+        .mes-dashboard {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0, 20, 40, 0.9), rgba(0, 40, 80, 0.8));
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .mes-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .mes-header h2 {
+            color: #00ffff;
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .mes-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+        
+        .mes-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .mes-module {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mes-module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffff, #0080ff);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .mes-module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.4);
+        }
+        
+        .mes-module:hover::before {
+            opacity: 1;
+        }
+        
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .module-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5));
+        }
+        
+        .module-header h3 {
+            color: #ffffff;
+            font-size: 18px;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .module-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+        
+        .metric-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        
+        .metric-value {
+            color: #00ffff;
+            font-size: 16px;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+        }
+        
+        .metric-value.quality-good,
+        .metric-value.equipment-normal,
+        .metric-value.inventory-safe,
+        .metric-value.energy-good,
+        .metric-value.personnel-good {
+            color: #00ff88;
+        }
+        
+        .metric-value.quality-bad,
+        .metric-value.inventory-warning {
+            color: #ff6b6b;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #00ff88);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .equipment-status {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px 0;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-dot.normal {
+            background: #00ff88;
+            box-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
+        }
+        
+        .status-dot.warning {
+            background: #ffaa00;
+            box-shadow: 0 0 5px rgba(255, 170, 0, 0.5);
+        }
+        
+        .inventory-list,
+        .personnel-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .inventory-item,
+        .personnel-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid transparent;
+        }
+        
+        .material-name,
+        .person-role {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+        }
+        
+        .material-stock.safe,
+        .person-status.online {
+            color: #00ff88;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .material-stock.warning {
+            color: #ffaa00;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .person-count {
+            color: #00ffff;
+            font-size: 12px;
+        }
+        
+        .quality-chart,
+        .energy-chart {
+            height: 120px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .quality-chart canvas,
+        .energy-chart canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .mes-modules {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mes-modules {
+                grid-template-columns: 1fr;
+            }
+            
+            .mes-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-logo">
+                <a href="index.html">
+                    <img src="assets/images/logo.png" alt="钛谷智变综合财务管理系统">
+                </a>
+            </div>
+            <h1>数字孪生系统与MES系统</h1>
+            <p class="subtitle">实时监控 • 3D可视化 • 数据驱动模拟</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="model-container">
+                <div id="model-view"></div>
+                <div class="controls">
+                    <button class="control-btn" id="rotate-btn">旋转视图</button>
+                    <button class="control-btn" id="reset-btn">重置视图</button>
+                    <button class="control-btn" id="zoom-in">放大</button>
+                    <button class="control-btn" id="zoom-out">缩小</button>
+                </div>
+            </div>
+
+            
+            <div class="panel-container">
+                <div class="data-panel">
+                    <div class="panel-title">
+                        <h2>实时参数监控</h2>
+                    </div>
+                    
+                    <div class="params-grid">
+                        <div class="param-card">
+                            <div class="param-header">
+                                <span class="param-name">等离子枪功率</span>
+                                <span class="param-unit">kW</span>
+                            </div>
+                            <div class="param-value" id="power-value">1250</div>
+                            <div class="chart-container">
+                                <canvas id="power-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="param-card">
+                            <div class="param-header">
+                                <span class="param-name">熔池温度</span>
+                                <span class="param-unit">°C</span>
+                            </div>
+                            <div class="param-value" id="temp-value">1780</div>
+                            <div class="chart-container">
+                                <canvas id="temp-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="param-card">
+                            <div class="param-header">
+                                <span class="param-name">冷却水流量</span>
+                                <span class="param-unit">m³/h</span>
+                            </div>
+                            <div class="param-value" id="flow-value">12.8</div>
+                            <div class="chart-container">
+                                <canvas id="flow-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="param-card">
+                            <div class="param-header">
+                                <span class="param-name">真空压力</span>
+                                <span class="param-unit">Pa</span>
+                            </div>
+                            <div class="param-value" id="pressure-value">0.05</div>
+                            <div class="chart-container">
+                                <canvas id="pressure-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="import-panel">
+                    <div class="panel-title">
+                        <h2>数据导入与模拟</h2>
+                    </div>
+                    
+                    <!-- 手动数据输入区域 -->
+                    <div class="manual-input-section">
+                        <h3>手动数据输入</h3>
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label>原料成本 (元/kg)</label>
+                                <input type="number" id="material-cost" value="85" step="0.1" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>电力成本 (元/kWh)</label>
+                                <input type="number" id="power-cost" value="0.8" step="0.01" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>人工成本 (元/h)</label>
+                                <input type="number" id="labor-cost" value="120" step="1" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>设备折旧 (元/h)</label>
+                                <input type="number" id="equipment-cost" value="200" step="1" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>生产批次 (kg)</label>
+                                <input type="number" id="batch-size" value="1000" step="10" min="1">
+                            </div>
+                            <div class="input-group">
+                                <label>生产时间 (h)</label>
+                                <input type="number" id="production-time" value="8" step="0.1" min="0.1">
+                            </div>
+                            <div class="input-group">
+                                <label>功率消耗 (kW)</label>
+                                <input type="number" id="power-consumption" value="500" step="10" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>良品率 (%)</label>
+                                <input type="number" id="yield-rate" value="95" step="0.1" min="0" max="100">
+                            </div>
+                        </div>
+                        <button class="calculate-btn" id="calculate-cost-btn">计算生产成本</button>
+                    </div>
+                    
+                    <!-- 成本分析结果显示 -->
+                    <div class="cost-analysis-section" id="cost-analysis" style="display: none;">
+                        <h3>成本分析结果</h3>
+                        <div class="cost-breakdown">
+                            <div class="cost-item">
+                                <span class="cost-label">原料成本:</span>
+                                <span class="cost-value" id="material-cost-result">0</span>
+                                <span class="cost-unit">元</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">电力成本:</span>
+                                <span class="cost-value" id="power-cost-result">0</span>
+                                <span class="cost-unit">元</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">人工成本:</span>
+                                <span class="cost-value" id="labor-cost-result">0</span>
+                                <span class="cost-unit">元</span>
+                            </div>
+                            <div class="cost-item">
+                                <span class="cost-label">设备折旧:</span>
+                                <span class="cost-value" id="equipment-cost-result">0</span>
+                                <span class="cost-unit">元</span>
+                            </div>
+                            <div class="cost-item total-cost">
+                                <span class="cost-label">总成本:</span>
+                                <span class="cost-value" id="total-cost-result">0</span>
+                                <span class="cost-unit">元</span>
+                            </div>
+                            <div class="cost-item unit-cost">
+                                <span class="cost-label">单位成本:</span>
+                                <span class="cost-value" id="unit-cost-result">0</span>
+                                <span class="cost-unit">元/kg</span>
+                            </div>
+                        </div>
+                        <div class="cost-chart-container">
+                            <canvas id="cost-breakdown-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- 文件上传区域 -->
+                    <div class="file-upload">
+                        <div class="upload-area" id="drop-area">
+                            <i>📁</i>
+                            <h3>拖放数据文件或点击上传</h3>
+                            <p>支持 CSV、Excel 或 JSON 格式</p>
+                            <input type="file" id="file-input" class="file-input" accept=".csv,.xlsx,.json">
+                        </div>
+                        
+                        <button class="simulate-btn" id="simulate-btn">开始模拟</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-panel">
+            <div class="status-header">
+                <h3 class="status-title">系统状态</h3>
+                <div class="status-indicator">
+                    <div class="indicator-dot" id="status-dot"></div>
+                    <span class="status-text" id="status-text">运行中</span>
+                </div>
+            </div>
+            
+            <div class="log-container" id="log-container">
+                <div class="log-entry">
+                    <span class="log-time">[12:30:45]</span>
+                    <span class="log-message">系统初始化完成，等待数据输入...</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[12:31:10]</span>
+                    <span class="log-message">3D模型加载成功，准备可视化</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[12:31:45]</span>
+                    <span class="log-message">参数监控系统已启动</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MES系统展板 -->
+        <div class="mes-dashboard">
+            <div class="mes-header">
+                <h2>MES制造执行系统</h2>
+                <p class="mes-subtitle">Manufacturing Execution System</p>
+            </div>
+            
+            <div class="mes-modules">
+                <!-- 生产管理模块 -->
+                <div class="mes-module production-module">
+                    <div class="module-header">
+                        <div class="module-icon">🏭</div>
+                        <h3>生产管理</h3>
+                    </div>
+                    <div class="module-content">
+                        <div class="metric-item">
+                            <span class="metric-label">当前订单</span>
+                            <span class="metric-value">WO-2024-001</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">生产进度</span>
+                            <span class="metric-value">75%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">计划产量</span>
+                            <span class="metric-value">2500 kg</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">实际产量</span>
+                            <span class="metric-value">1875 kg</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 质量控制模块 -->
+                <div class="mes-module quality-module">
+                    <div class="module-header">
+                        <div class="module-icon">🔍</div>
+                        <h3>质量控制</h3>
+                    </div>
+                    <div class="module-content">
+                        <div class="metric-item">
+                            <span class="metric-label">合格率</span>
+                            <span class="metric-value quality-good">96.8%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">检测批次</span>
+                            <span class="metric-value">125</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">不合格品</span>
+                            <span class="metric-value quality-bad">4</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">返工率</span>
+                            <span class="metric-value">2.1%</span>
+                        </div>
+                        <div class="quality-chart">
+                            <canvas id="quality-trend-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 设备维护模块 -->
+                <div class="mes-module maintenance-module">
+                    <div class="module-header">
+                        <div class="module-icon">⚙️</div>
+                        <h3>设备维护</h3>
+                    </div>
+                    <div class="module-content">
+                        <div class="metric-item">
+                            <span class="metric-label">设备状态</span>
+                            <span class="metric-value equipment-normal">正常</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">运行时间</span>
+                            <span class="metric-value">156.5 h</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">下次保养</span>
+                            <span class="metric-value">3天后</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">故障次数</span>
+                            <span class="metric-value">0</span>
+                        </div>
+                        <div class="equipment-status">
+                            <div class="status-item">
+                                <span class="status-dot normal"></span>
+                                <span>等离子枪</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-dot normal"></span>
+                                <span>冷却系统</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-dot warning"></span>
+                                <span>真空泵</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 库存管理模块 -->
+                <div class="mes-module inventory-module">
+                    <div class="module-header">
+                        <div class="module-icon">📦</div>
+                        <h3>库存管理</h3>
+                    </div>
+                    <div class="module-content">
+                        <div class="metric-item">
+                            <span class="metric-label">原料库存</span>
+                            <span class="metric-value">15.2 t</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">成品库存</span>
+                            <span class="metric-value">8.7 t</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">安全库存</span>
+                            <span class="metric-value inventory-safe">充足</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">预警物料</span>
+                            <span class="metric-value inventory-warning">2项</span>
+                        </div>
+                        <div class="inventory-list">
+                            <div class="inventory-item">
+                                <span class="material-name">钛合金原料</span>
+                                <span class="material-stock safe">85%</span>
+                            </div>
+                            <div class="inventory-item">
+                                <span class="material-name">氩气</span>
+                                <span class="material-stock warning">25%</span>
+                            </div>
+                            <div class="inventory-item">
+                                <span class="material-name">电极</span>
+                                <span class="material-stock safe">92%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 能耗监控模块 -->
+                <div class="mes-module energy-module">
+                    <div class="module-header">
+                        <div class="module-icon">⚡</div>
+                        <h3>能耗监控</h3>
+                    </div>
+                    <div class="module-content">
+                        <div class="metric-item">
+                            <span class="metric-label">当前功率</span>
+                            <span class="metric-value">1250 kW</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">日耗电量</span>
+                            <span class="metric-value">28.5 MWh</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">能效比</span>
+                            <span class="metric-value energy-good">92.3%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">碳排放</span>
+                            <span class="metric-value">12.4 t</span>
+                        </div>
+                        <div class="energy-chart">
+                            <canvas id="energy-consumption-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 人员管理模块 -->
+                <div class="mes-module personnel-module">
+                    <div class="module-header">
+                        <div class="module-icon">👥</div>
+                        <h3>人员管理</h3>
+                    </div>
+                    <div class="module-content">
+                        <div class="metric-item">
+                            <span class="metric-label">在岗人员</span>
+                            <span class="metric-value">12人</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">班次</span>
+                            <span class="metric-value">白班</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">工作效率</span>
+                            <span class="metric-value personnel-good">98.5%</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">培训完成</span>
+                            <span class="metric-value">100%</span>
+                        </div>
+                        <div class="personnel-list">
+                            <div class="personnel-item">
+                                <span class="person-role">操作员</span>
+                                <span class="person-count">6人</span>
+                                <span class="person-status online">在线</span>
+                            </div>
+                            <div class="personnel-item">
+                                <span class="person-role">质检员</span>
+                                <span class="person-count">2人</span>
+                                <span class="person-status online">在线</span>
+                            </div>
+                            <div class="personnel-item">
+                                <span class="person-role">维护员</span>
+                                <span class="person-count">4人</span>
+                                <span class="person-status online">在线</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let scene, camera, renderer, controls;
+        let isRotating = true;
+        let furnaceGroup;
+        
+        // 初始化Three.js场景
+        function initThreeJS() {
+            const container = document.getElementById('model-view');
+            
+            if (!container) {
+                console.error('找不到model-view容器');
+                return null;
+            }
+            
+            // 创建场景
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a192f);
+            
+            // 创建相机
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(8, 6, 8);
+            camera.lookAt(0, 3, 0);
+            
+            // 创建渲染器
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+            
+            // 添加光源
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(10, 10, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            // 创建等离子冷床炉模型
+            createFurnaceModel();
+            
+            // 添加轨道控制器（使用备用方案）
+            try {
+                if (typeof THREE.OrbitControls !== 'undefined') {
+                    controls = new THREE.OrbitControls(camera, renderer.domElement);
+                    controls.enableDamping = true;
+                    controls.dampingFactor = 0.05;
+                    controls.enableZoom = true;
+                    controls.enablePan = true;
+                } else {
+                    console.warn('OrbitControls未加载，使用基础控制');
+                    setupBasicControls(container);
+                }
+            } catch (e) {
+                console.warn('OrbitControls初始化失败，使用基础控制:', e);
+                setupBasicControls(container);
+            }
+            
+            // 动画循环
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // 旋转模型
+                if (isRotating && furnaceGroup) {
+                    furnaceGroup.rotation.y += 0.005;
+                }
+                
+                if (controls && controls.update) {
+                    controls.update();
+                }
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // 窗口大小调整
+            window.addEventListener('resize', () => {
+                if (camera && renderer && container) {
+                    camera.aspect = container.clientWidth / container.clientHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                }
+            });
+            
+            return {
+                scene: scene,
+                camera: camera,
+                renderer: renderer
+            };
+        }
+        
+        // 基础鼠标控制（备用方案）
+        function setupBasicControls(container) {
+            let mouseDown = false;
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            container.addEventListener('mousedown', (e) => {
+                mouseDown = true;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            container.addEventListener('mouseup', () => {
+                mouseDown = false;
+            });
+            
+            container.addEventListener('mousemove', (e) => {
+                if (!mouseDown) return;
+                
+                const deltaX = e.clientX - mouseX;
+                const deltaY = e.clientY - mouseY;
+                
+                if (furnaceGroup) {
+                    furnaceGroup.rotation.y += deltaX * 0.01;
+                    furnaceGroup.rotation.x += deltaY * 0.01;
+                }
+                
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const scale = e.deltaY > 0 ? 1.1 : 0.9;
+                camera.position.multiplyScalar(scale);
+            });
+        }
+        
+        // 创建等离子冷床炉模型（真实工业版）
+        function createFurnaceModel() {
+            // 创建模型组
+            furnaceGroup = new THREE.Group();
+            
+            // 创建工厂环境
+            createFactoryEnvironment();
+            
+            // 创建真实的等离子冷床炉主体结构
+            createRealisticFurnaceBody();
+            
+            // 创建等离子枪系统
+            createPlasmaGunSystem();
+            
+            // 创建冷床系统
+            createColdHearthSystem();
+            
+            // 创建真空系统
+            createVacuumSystem();
+            
+            // 冷却系统管道网络
+            createCoolingSystem();
+            
+            // 控制系统
+            createControlSystem();
+            
+            // 传感器系统
+            createSensorSystem();
+            
+            // 电气系统
+            createElectricalSystem();
+            
+            // 原料进料系统
+            createFeedingSystem();
+            
+            // 添加真实的等离子效果和熔池
+            createRealisticEffects();
+            
+            // 将整个模型组添加到场景
+            scene.add(furnaceGroup);
+        }
+        
+        // 创建真实的炉体结构
+        function createRealisticFurnaceBody() {
+            // 主炉体基座
+            const furnaceBase = new THREE.Mesh(
+                new THREE.CylinderGeometry(4, 4.5, 1.5, 32),
+                new THREE.MeshPhongMaterial({ 
+                    color: 0x2c3e50,
+                    metalness: 0.8,
+                    roughness: 0.3
+                })
+            );
+            furnaceBase.position.y = 0.75;
+            furnaceBase.castShadow = true;
+            furnaceBase.receiveShadow = true;
+            furnaceGroup.add(furnaceBase);
+            
+            // 主炉体（分段式设计）
+            for (let i = 0; i < 3; i++) {
+                const segment = new THREE.Mesh(
+                    new THREE.CylinderGeometry(3.5 - i * 0.1, 3.6 - i * 0.1, 2.5, 32),
+                    new THREE.MeshPhongMaterial({ 
+                        color: 0x34495e,
+                        metalness: 0.7,
+                        roughness: 0.4
+                    })
+                );
+                segment.position.y = 2.75 + i * 2.5;
+                segment.castShadow = true;
+                segment.receiveShadow = true;
+                furnaceGroup.add(segment);
+                
+                // 炉体法兰连接
+                const flange = new THREE.Mesh(
+                    new THREE.CylinderGeometry(3.8, 3.8, 0.2, 32),
+                    new THREE.MeshPhongMaterial({ color: 0x95a5a6 })
+                );
+                flange.position.y = 1.5 + i * 2.5;
+                furnaceGroup.add(flange);
+            }
+            
+            // 炉体保温层
+            const insulation = new THREE.Mesh(
+                new THREE.CylinderGeometry(4.2, 4.2, 8, 32),
+                new THREE.MeshPhongMaterial({ 
+                    color: 0x7f8c8d,
+                    transparent: true,
+                    opacity: 0.6
+                })
+            );
+            insulation.position.y = 4.5;
+            furnaceGroup.add(insulation);
+            
+            // 炉顶结构
+            const furnaceTop = new THREE.Mesh(
+                new THREE.ConeGeometry(3.5, 1.5, 32),
+                new THREE.MeshPhongMaterial({ color: 0x2c3e50 })
+            );
+            furnaceTop.position.y = 9.25;
+            furnaceTop.castShadow = true;
+            furnaceGroup.add(furnaceTop);
+            
+            // 观察窗
+            for (let i = 0; i < 4; i++) {
+                const window = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.3, 0.3, 0.1, 16),
+                    new THREE.MeshBasicMaterial({ 
+                        color: 0x00ffff,
+                        transparent: true,
+                        opacity: 0.8
+                    })
+                );
+                const angle = (i / 4) * Math.PI * 2;
+                window.position.set(
+                    Math.cos(angle) * 3.7,
+                    5 + i * 0.8,
+                    Math.sin(angle) * 3.7
+                );
+                window.rotation.y = -angle;
+                furnaceGroup.add(window);
+            }
+        }
+        
+        // 创建等离子枪系统
+        function createPlasmaGunSystem() {
+            // 等离子枪主体
+            const plasmaGunBody = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.4, 0.6, 2.5, 16),
+                new THREE.MeshPhongMaterial({ 
+                    color: 0xc0392b,
+                    metalness: 0.9,
+                    roughness: 0.2
+                })
+            );
+            plasmaGunBody.position.set(0, 7, -3);
+            plasmaGunBody.rotation.x = Math.PI/2;
+            plasmaGunBody.castShadow = true;
+            furnaceGroup.add(plasmaGunBody);
+            
+            // 等离子枪喷嘴
+            const nozzle = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.15, 0.25, 0.8, 16),
+                new THREE.MeshPhongMaterial({ 
+                    color: 0x8e44ad,
+                    emissive: 0x3498db
+                })
+            );
+            nozzle.position.set(0, 7, -1.2);
+            nozzle.rotation.x = Math.PI/2;
+            furnaceGroup.add(nozzle);
+            
+            // 等离子枪冷却套
+            const coolingJacket = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.7, 0.7, 2.8, 16),
+                new THREE.MeshPhongMaterial({ 
+                    color: 0x3498db,
+                    transparent: true,
+                    opacity: 0.7
+                })
+            );
+            coolingJacket.position.set(0, 7, -3);
+            coolingJacket.rotation.x = Math.PI/2;
+            furnaceGroup.add(coolingJacket);
+            
+            // 等离子枪支撑臂
+            const supportArm = new THREE.Mesh(
+                new THREE.BoxGeometry(0.8, 3, 0.8),
+                new THREE.MeshPhongMaterial({ color: 0x34495e })
+            );
+            supportArm.position.set(0, 8.5, -4);
+            supportArm.castShadow = true;
+            furnaceGroup.add(supportArm);
+            
+            // 等离子枪旋转机构
+            const rotationMechanism = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.5, 0.5, 1, 16),
+                new THREE.MeshPhongMaterial({ color: 0x95a5a6 })
+            );
+            rotationMechanism.position.set(0, 10, -4);
+            furnaceGroup.add(rotationMechanism);
+        }
+        
+        // 创建冷床系统
+        function createColdHearthSystem() {
+            // 冷床基座
+            const hearthBase = new THREE.Mesh(
+                new THREE.BoxGeometry(8, 0.5, 4),
+                new THREE.MeshPhongMaterial({ color: 0x2c3e50 })
+            );
+            hearthBase.position.set(0, -0.25, 4);
+            hearthBase.castShadow = true;
+            furnaceGroup.add(hearthBase);
+            
+            // 冷床铜板
+            for (let i = 0; i < 8; i++) {
+                const copperPlate = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.8, 0.3, 4),
+                    new THREE.MeshPhongMaterial({ 
+                        color: 0xd35400,
+                        metalness: 0.8,
+                        roughness: 0.2
+                    })
+                );
+                copperPlate.position.set(-3.5 + i, 0.15, 4);
+                copperPlate.castShadow = true;
+                furnaceGroup.add(copperPlate);
+                
+                // 冷却水道
+                const waterChannel = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.6, 0.1, 3.8),
+                    new THREE.MeshPhongMaterial({ color: 0x3498db })
+                );
+                waterChannel.position.set(-3.5 + i, 0.05, 4);
+                furnaceGroup.add(waterChannel);
+            }
+            
+            // 冷床侧壁
+            for (let side = 0; side < 2; side++) {
+                const sideWall = new THREE.Mesh(
+                    new THREE.BoxGeometry(8, 1, 0.3),
+                    new THREE.MeshPhongMaterial({ color: 0x34495e })
+                );
+                sideWall.position.set(0, 0.5, 2 + side * 4);
+                sideWall.castShadow = true;
+                furnaceGroup.add(sideWall);
+            }
+        }
+        
+        // 创建真空系统
+        function createVacuumSystem() {
+            // 真空泵主体
+            const vacuumPump = new THREE.Mesh(
+                new THREE.CylinderGeometry(1.2, 1.2, 2.5, 16),
+                new THREE.MeshPhongMaterial({ 
+                    color: 0x27ae60,
+                    metalness: 0.8,
+                    roughness: 0.3
+                })
+            );
+            vacuumPump.position.set(-6, 1.25, -6);
+            vacuumPump.castShadow = true;
+            furnaceGroup.add(vacuumPump);
+            
+            // 真空泵电机
+            const pumpMotor = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.8, 0.8, 1.5, 16),
+                new THREE.MeshPhongMaterial({ color: 0x2c3e50 })
+            );
+            pumpMotor.position.set(-6, 3.25, -6);
+            furnaceGroup.add(pumpMotor);
+            
+            // 真空管道
+            const vacuumPipe = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.3, 0.3, 8, 16),
+                new THREE.MeshPhongMaterial({ color: 0x95a5a6 })
+            );
+            vacuumPipe.position.set(-3, 2, -3);
+            vacuumPipe.rotation.z = Math.PI/4;
+            vacuumPipe.castShadow = true;
+            furnaceGroup.add(vacuumPipe);
+            
+            // 真空计
+            const vacuumGauge = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.2, 0.2, 0.1, 16),
+                new THREE.MeshBasicMaterial({ 
+                    color: 0x00ff00,
+                    emissive: 0x004400
+                })
+            );
+            vacuumGauge.position.set(-2, 3, -2);
+            furnaceGroup.add(vacuumGauge);
+        }
+        
+        // 创建电气系统
+        function createElectricalSystem() {
+            // 主配电柜
+            const mainPanel = new THREE.Mesh(
+                new THREE.BoxGeometry(3, 5, 1.5),
+                new THREE.MeshPhongMaterial({ color: 0x2c3e50 })
+            );
+            mainPanel.position.set(8, 2.5, -8);
+            mainPanel.castShadow = true;
+            furnaceGroup.add(mainPanel);
+            
+            // 配电柜门
+            const panelDoor = new THREE.Mesh(
+                new THREE.BoxGeometry(2.8, 4.8, 0.1),
+                new THREE.MeshPhongMaterial({ color: 0x34495e })
+            );
+            panelDoor.position.set(8, 2.5, -7.2);
+            furnaceGroup.add(panelDoor);
+            
+            // 电缆桥架
+            for (let i = 0; i < 5; i++) {
+                const cableTray = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.5, 0.2, 3),
+                    new THREE.MeshPhongMaterial({ color: 0x95a5a6 })
+                );
+                cableTray.position.set(6 - i * 1.5, 8 + i * 0.5, -5);
+                furnaceGroup.add(cableTray);
+            }
+            
+            // 变压器
+            const transformer = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 3, 2),
+                new THREE.MeshPhongMaterial({ color: 0x7f8c8d })
+            );
+            transformer.position.set(10, 1.5, -5);
+            transformer.castShadow = true;
+            furnaceGroup.add(transformer);
+        }
+        
+        // 创建原料进料系统
+        function createFeedingSystem() {
+            // 进料斗
+            const feeder = new THREE.Mesh(
+                new THREE.ConeGeometry(1.5, 3, 8),
+                new THREE.MeshPhongMaterial({ color: 0xe67e22 })
+            );
+            feeder.position.set(-4, 8, 0);
+            feeder.castShadow = true;
+            furnaceGroup.add(feeder);
+            
+            // 进料管道
+            const feedPipe = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.2, 0.2, 4, 16),
+                new THREE.MeshPhongMaterial({ color: 0x95a5a6 })
+            );
+            feedPipe.position.set(-2, 6, 0);
+            feedPipe.rotation.z = -Math.PI/4;
+            furnaceGroup.add(feedPipe);
+            
+            // 进料阀门
+            const feedValve = new THREE.Mesh(
+                new THREE.SphereGeometry(0.3, 16, 16),
+                new THREE.MeshPhongMaterial({ color: 0xe74c3c })
+            );
+            feedValve.position.set(-1, 4.5, 0);
+            furnaceGroup.add(feedValve);
+            
+            // 原料储罐
+            const storageTank = new THREE.Mesh(
+                new THREE.CylinderGeometry(2, 2, 6, 16),
+                new THREE.MeshPhongMaterial({ color: 0x3498db })
+            );
+            storageTank.position.set(-8, 3, 2);
+            storageTank.castShadow = true;
+            furnaceGroup.add(storageTank);
+        }
+        
+        // 创建真实效果
+        function createRealisticEffects() {
+            // 等离子弧效果
+            const plasmaArc = new THREE.PointLight(0x00a8ff, 8, 12);
+            plasmaArc.position.set(0, 6, -1);
+            plasmaArc.castShadow = true;
+            furnaceGroup.add(plasmaArc);
+            
+            // 熔池发光效果
+            const meltPoolGlow = new THREE.Mesh(
+                new THREE.CircleGeometry(2.5, 32),
+                new THREE.MeshBasicMaterial({ 
+                    color: 0xff4500,
+                    transparent: true,
+                    opacity: 0.8
+                })
+            );
+            meltPoolGlow.rotation.x = -Math.PI/2;
+            meltPoolGlow.position.y = 0.15;
+            furnaceGroup.add(meltPoolGlow);
+            
+            // 熔池中心高温区
+            const hotSpot = new THREE.Mesh(
+                new THREE.CircleGeometry(1, 32),
+                new THREE.MeshBasicMaterial({ 
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.9
+                })
+            );
+            hotSpot.rotation.x = -Math.PI/2;
+            hotSpot.position.y = 0.2;
+            furnaceGroup.add(hotSpot);
+            
+            // 添加粒子效果
+            createAdvancedParticleEffects();
+            
+            // 动态光照效果
+            let intensity = 8;
+            let glowIntensity = 0.8;
+            setInterval(() => {
+                intensity = 7 + Math.sin(Date.now() * 0.008) * 2;
+                glowIntensity = 0.6 + Math.sin(Date.now() * 0.012) * 0.3;
+                plasmaArc.intensity = intensity;
+                meltPoolGlow.material.opacity = glowIntensity;
+                hotSpot.material.opacity = 0.7 + Math.sin(Date.now() * 0.015) * 0.3;
+            }, 100);
+        }
+        
+        // 创建高级粒子效果
+        function createAdvancedParticleEffects() {
+            // 等离子火花效果
+            const sparkGeometry = new THREE.BufferGeometry();
+            const sparkVertices = [];
+            const sparkColors = [];
+            
+            for (let i = 0; i < 200; i++) {
+                sparkVertices.push(
+                    (Math.random() - 0.5) * 0.5,
+                    Math.random() * 2 + 5,
+                    (Math.random() - 0.5) * 0.5
+                );
+                sparkColors.push(
+                    1, Math.random() * 0.5 + 0.5, 0
+                );
+            }
+            
+            sparkGeometry.setAttribute('position', new THREE.Float32BufferAttribute(sparkVertices, 3));
+            sparkGeometry.setAttribute('color', new THREE.Float32BufferAttribute(sparkColors, 3));
+            
+            const sparkMaterial = new THREE.PointsMaterial({
+                size: 0.1,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const sparks = new THREE.Points(sparkGeometry, sparkMaterial);
+            furnaceGroup.add(sparks);
+            
+            // 烟雾效果
+            const smokeGeometry = new THREE.BufferGeometry();
+            const smokeVertices = [];
+            
+            for (let i = 0; i < 150; i++) {
+                smokeVertices.push(
+                    (Math.random() - 0.5) * 3,
+                    Math.random() * 8 + 8,
+                    (Math.random() - 0.5) * 3
+                );
+            }
+            
+            smokeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(smokeVertices, 3));
+            
+            const smokeMaterial = new THREE.PointsMaterial({
+                size: 0.3,
+                color: 0x666666,
+                transparent: true,
+                opacity: 0.4
+            });
+            
+            const smoke = new THREE.Points(smokeGeometry, smokeMaterial);
+            furnaceGroup.add(smoke);
+            
+            // 粒子动画
+            setInterval(() => {
+                const positions = sparks.geometry.attributes.position.array;
+                for (let i = 1; i < positions.length; i += 3) {
+                    positions[i] += Math.random() * 0.1 - 0.05;
+                    if (positions[i] > 8) positions[i] = 5;
+                }
+                sparks.geometry.attributes.position.needsUpdate = true;
+                
+                const smokePositions = smoke.geometry.attributes.position.array;
+                for (let i = 1; i < smokePositions.length; i += 3) {
+                    smokePositions[i] += 0.02;
+                    if (smokePositions[i] > 16) smokePositions[i] = 8;
+                }
+                smoke.geometry.attributes.position.needsUpdate = true;
+            }, 100);
+        }
+        
+        // 创建工厂环境
+        function createFactoryEnvironment() {
+            // 工厂地面
+            const factoryFloor = new THREE.Mesh(
+                new THREE.PlaneGeometry(40, 40),
+                new THREE.MeshLambertMaterial({ 
+                    color: 0x34495e,
+                    transparent: true,
+                    opacity: 0.9
+                })
+            );
+            factoryFloor.rotation.x = -Math.PI/2;
+            factoryFloor.position.y = -1;
+            factoryFloor.receiveShadow = true;
+            furnaceGroup.add(factoryFloor);
+            
+            // 工厂墙壁
+            const wallMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x7f8c8d,
+                transparent: true,
+                opacity: 0.6
+            });
+            
+            // 后墙
+            const backWall = new THREE.Mesh(
+                new THREE.PlaneGeometry(40, 15),
+                wallMaterial
+            );
+            backWall.position.set(0, 6.5, -20);
+            furnaceGroup.add(backWall);
+            
+            // 侧墙
+            const leftWall = new THREE.Mesh(
+                new THREE.PlaneGeometry(40, 15),
+                wallMaterial
+            );
+            leftWall.rotation.y = Math.PI/2;
+            leftWall.position.set(-20, 6.5, 0);
+            furnaceGroup.add(leftWall);
+            
+            // 天花板结构
+            const ceiling = new THREE.Mesh(
+                new THREE.PlaneGeometry(40, 40),
+                new THREE.MeshLambertMaterial({ 
+                    color: 0x2c3e50,
+                    transparent: true,
+                    opacity: 0.4
+                })
+            );
+            ceiling.rotation.x = Math.PI/2;
+            ceiling.position.y = 14;
+            furnaceGroup.add(ceiling);
+            
+            // 工厂支柱
+            for (let i = 0; i < 4; i++) {
+                const pillar = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.3, 0.3, 15, 8),
+                    new THREE.MeshPhongMaterial({ color: 0x95a5a6 })
+                );
+                const angle = (i / 4) * Math.PI * 2;
+                pillar.position.set(
+                    Math.cos(angle) * 15,
+                    6.5,
+                    Math.sin(angle) * 15
+                );
+                pillar.castShadow = true;
+                furnaceGroup.add(pillar);
+            }
+            
+            // 工厂照明
+            for (let i = 0; i < 6; i++) {
+                const light = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.5, 0.5, 0.2, 16),
+                    new THREE.MeshBasicMaterial({ 
+                        color: 0xffffff,
+                        emissive: 0xffffcc
+                    })
+                );
+                light.position.set(
+                    (i % 3 - 1) * 8,
+                    13,
+                    Math.floor(i / 3) * 8 - 4
+                );
+                furnaceGroup.add(light);
+                
+                // 添加点光源
+                const pointLight = new THREE.PointLight(0xffffcc, 0.5, 10);
+                pointLight.position.copy(light.position);
+                furnaceGroup.add(pointLight);
+            }
+        }
+        
+        // 创建冷却系统
+        function createCoolingSystem() {
+            const pipeMaterial = new THREE.MeshPhongMaterial({ color: 0x4cc9f0 });
+            const valveMaterial = new THREE.MeshPhongMaterial({ color: 0xe74c3c });
+            
+            // 主冷却管道
+            for (let i = 0; i < 6; i++) {
+                const pipe = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.15, 0.15, 4, 16),
+                    pipeMaterial
+                );
+                const angle = (i / 6) * Math.PI * 2;
+                pipe.position.set(
+                    Math.cos(angle) * 3.5,
+                    2 + i * 0.5,
+                    Math.sin(angle) * 3.5
+                );
+                pipe.rotation.z = Math.PI/2;
+                pipe.castShadow = true;
+                furnaceGroup.add(pipe);
+                
+                // 管道阀门
+                const valve = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+                    valveMaterial
+                );
+                valve.position.set(
+                    Math.cos(angle) * 5,
+                    2 + i * 0.5,
+                    Math.sin(angle) * 5
+                );
+                valve.castShadow = true;
+                furnaceGroup.add(valve);
+            }
+            
+            // 冷却塔
+            const coolingTower = new THREE.Mesh(
+                new THREE.CylinderGeometry(1, 1.5, 8, 16),
+                new THREE.MeshPhongMaterial({ color: 0x3498db })
+            );
+            coolingTower.position.set(-8, 4, -8);
+            coolingTower.castShadow = true;
+            furnaceGroup.add(coolingTower);
+            
+            // 冷却塔顶部
+            const towerTop = new THREE.Mesh(
+                new THREE.ConeGeometry(1.2, 2, 16),
+                new THREE.MeshPhongMaterial({ color: 0x2980b9 })
+            );
+            towerTop.position.set(-8, 9, -8);
+            furnaceGroup.add(towerTop);
+        }
+        
+        // 创建控制系统
+        function createControlSystem() {
+            // 控制台
+            const controlPanel = new THREE.Mesh(
+                new THREE.BoxGeometry(3, 1.5, 1),
+                new THREE.MeshPhongMaterial({ color: 0x2c3e50 })
+            );
+            controlPanel.position.set(6, 1.75, 6);
+            controlPanel.castShadow = true;
+            furnaceGroup.add(controlPanel);
+            
+            // 控制台屏幕
+            const screen = new THREE.Mesh(
+                new THREE.PlaneGeometry(2, 1),
+                new THREE.MeshBasicMaterial({ 
+                    color: 0x00ff00,
+                    emissive: 0x004400
+                })
+            );
+            screen.position.set(6, 2.2, 5.49);
+            furnaceGroup.add(screen);
+            
+            // 控制按钮
+            for (let i = 0; i < 8; i++) {
+                const button = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.1, 0.1, 0.05, 16),
+                    new THREE.MeshPhongMaterial({ 
+                        color: i % 2 === 0 ? 0xe74c3c : 0x27ae60
+                    })
+                );
+                button.position.set(
+                    5.2 + (i % 4) * 0.4,
+                    1.3,
+                    6.3 - Math.floor(i / 4) * 0.3
+                );
+                furnaceGroup.add(button);
+            }
+            
+            // 电气柜
+            const electricalCabinet = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 4, 1),
+                new THREE.MeshPhongMaterial({ color: 0x34495e })
+            );
+            electricalCabinet.position.set(10, 2, 8);
+            electricalCabinet.castShadow = true;
+            furnaceGroup.add(electricalCabinet);
+        }
+        
+        // 创建传感器系统
+        function createSensorSystem() {
+            const sensorMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xf39c12,
+                emissive: 0x8e44ad
+            });
+            
+            // 温度传感器
+            for (let i = 0; i < 4; i++) {
+                const sensor = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.1, 16, 16),
+                    sensorMaterial
+                );
+                const angle = (i / 4) * Math.PI * 2;
+                sensor.position.set(
+                    Math.cos(angle) * 3.2,
+                    4 + i,
+                    Math.sin(angle) * 3.2
+                );
+                furnaceGroup.add(sensor);
+                
+                // 传感器连线
+                const cable = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.02, 0.02, 2, 8),
+                    new THREE.MeshBasicMaterial({ color: 0x000000 })
+                );
+                cable.position.set(
+                    Math.cos(angle) * 4,
+                    4 + i,
+                    Math.sin(angle) * 4
+                );
+                cable.rotation.z = Math.PI/2;
+                furnaceGroup.add(cable);
+            }
+        }
+        
+        // 创建粒子效果
+        function createParticleEffects() {
+            // 烟雾效果
+            const smokeGeometry = new THREE.BufferGeometry();
+            const smokeVertices = [];
+            
+            for (let i = 0; i < 100; i++) {
+                smokeVertices.push(
+                    (Math.random() - 0.5) * 2,
+                    Math.random() * 8 + 6,
+                    (Math.random() - 0.5) * 2
+                );
+            }
+            
+            smokeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(smokeVertices, 3));
+            
+            const smokeMaterial = new THREE.PointsMaterial({
+                color: 0x888888,
+                size: 0.1,
+                transparent: true,
+                opacity: 0.3
+            });
+            
+            const smoke = new THREE.Points(smokeGeometry, smokeMaterial);
+            furnaceGroup.add(smoke);
+            
+            // 火花效果
+            const sparkGeometry = new THREE.BufferGeometry();
+            const sparkVertices = [];
+            
+            for (let i = 0; i < 50; i++) {
+                sparkVertices.push(
+                    (Math.random() - 0.5) * 1,
+                    Math.random() * 2 + 4,
+                    (Math.random() - 0.5) * 1
+                );
+            }
+            
+            sparkGeometry.setAttribute('position', new THREE.Float32BufferAttribute(sparkVertices, 3));
+            
+            const sparkMaterial = new THREE.PointsMaterial({
+                color: 0xff6600,
+                size: 0.05,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const sparks = new THREE.Points(sparkGeometry, sparkMaterial);
+            furnaceGroup.add(sparks);
+        }
+        
+        // 初始化图表
+        function initCharts() {
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
+                },
+                elements: {
+                    point: { radius: 0 }
+                }
+            };
+            
+            // 功率图表
+            const powerCtx = document.getElementById('power-chart').getContext('2d');
+            const powerChart = new Chart(powerCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(20).fill(''),
+                    datasets: [{
+                        data: Array(20).fill(1200).map(v => v + Math.random() * 100),
+                        borderColor: '#00c9ff',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: {
+                            target: 'origin',
+                            above: 'rgba(0, 201, 255, 0.1)'
+                        }
+                    }]
+                },
+                options: chartOptions
+            });
+            
+            // 温度图表
+            const tempCtx = document.getElementById('temp-chart').getContext('2d');
+            const tempChart = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(20).fill(''),
+                    datasets: [{
+                        data: Array(20).fill(1750).map(v => v + Math.random() * 60),
+                        borderColor: '#ff5400',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: {
+                            target: 'origin',
+                            above: 'rgba(255, 84, 0, 0.1)'
+                        }
+                    }]
+                },
+                options: chartOptions
+            });
+            
+            // 流量图表
+            const flowCtx = document.getElementById('flow-chart').getContext('2d');
+            const flowChart = new Chart(flowCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(20).fill(''),
+                    datasets: [{
+                        data: Array(20).fill(12.5).map(v => v + Math.random() * 0.6),
+                        borderColor: '#4cc9f0',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: {
+                            target: 'origin',
+                            above: 'rgba(76, 201, 240, 0.1)'
+                        }
+                    }]
+                },
+                options: chartOptions
+            });
+            
+            // 压力图表
+            const pressureCtx = document.getElementById('pressure-chart').getContext('2d');
+            const pressureChart = new Chart(pressureCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(20).fill(''),
+                    datasets: [{
+                        data: Array(20).fill(0.05).map(v => v + Math.random() * 0.01),
+                        borderColor: '#92fe9d',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: {
+                            target: 'origin',
+                            above: 'rgba(146, 254, 157, 0.1)'
+                        }
+                    }]
+                },
+                options: chartOptions
+            });
+            
+            // 更新图表数据
+            setInterval(() => {
+                const shiftData = (chart) => {
+                    const data = chart.data.datasets[0].data;
+                    data.shift();
+                    data.push(data[data.length-1] + (Math.random() - 0.5) * 10);
+                    chart.update();
+                };
+                
+                shiftData(powerChart);
+                shiftData(tempChart);
+                shiftData(flowChart);
+                shiftData(pressureChart);
+                
+                // 更新数值显示
+                document.getElementById('power-value').textContent = Math.round(powerChart.data.datasets[0].data[19]);
+                document.getElementById('temp-value').textContent = Math.round(tempChart.data.datasets[0].data[19]);
+                document.getElementById('flow-value').textContent = flowChart.data.datasets[0].data[19].toFixed(1);
+                document.getElementById('pressure-value').textContent = pressureChart.data.datasets[0].data[19].toFixed(2);
+            }, 1000);
+        }
+        
+        // 事件处理
+        function setupEventListeners() {
+            // 旋转控制
+            const rotateBtn = document.getElementById('rotate-btn');
+            if (rotateBtn) {
+                rotateBtn.addEventListener('click', function() {
+                    isRotating = !isRotating;
+                    this.textContent = isRotating ? '停止旋转' : '旋转视图';
+                });
+            }
+            
+            // 重置视图
+            const resetBtn = document.getElementById('reset-btn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    if (camera) {
+                        camera.position.set(8, 6, 8);
+                        camera.lookAt(0, 3, 0);
+                    }
+                });
+            }
+            
+            // 缩放控制
+            const zoomInBtn = document.getElementById('zoom-in');
+            const zoomOutBtn = document.getElementById('zoom-out');
+            
+            if (zoomInBtn) {
+                zoomInBtn.addEventListener('click', () => {
+                    if (camera) {
+                        camera.position.multiplyScalar(0.9);
+                    }
+                });
+            }
+            
+            if (zoomOutBtn) {
+                zoomOutBtn.addEventListener('click', () => {
+                    if (camera) {
+                        camera.position.multiplyScalar(1.1);
+                    }
+                });
+            }
+            
+            // 文件上传
+            const dropArea = document.getElementById('drop-area');
+            const fileInput = document.getElementById('file-input');
+            
+            dropArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) {
+                    const file = e.target.files[0];
+                    addLog(`已导入数据文件: ${file.name}`);
+                    dropArea.innerHTML = `
+                        <i>✅</i>
+                        <h3>文件已上传</h3>
+                        <p>${file.name}</p>
+                        <p>大小: ${(file.size/1024).toFixed(1)} KB</p>
+                    `;
+                }
+            });
+            
+            // 开始模拟
+            document.getElementById('simulate-btn').addEventListener('click', () => {
+                addLog('开始模拟运行...');
+                document.getElementById('simulate-btn').textContent = '模拟运行中...';
+                document.getElementById('simulate-btn').disabled = true;
+                
+                // 模拟运行状态
+                setTimeout(() => {
+                    addLog('模拟运行完成，生成分析报告');
+                    document.getElementById('simulate-btn').textContent = '模拟完成';
+                }, 3000);
+            });
+            
+            // 成本计算按钮
+            const calculateBtn = document.getElementById('calculate-cost-btn');
+            if (calculateBtn) {
+                calculateBtn.addEventListener('click', calculateProductionCost);
+            }
+        }
+        
+        // 成本计算函数
+        function calculateProductionCost() {
+            // 获取输入值
+            const materialCost = parseFloat(document.getElementById('material-cost').value) || 0;
+            const powerCost = parseFloat(document.getElementById('power-cost').value) || 0;
+            const laborCost = parseFloat(document.getElementById('labor-cost').value) || 0;
+            const equipmentCost = parseFloat(document.getElementById('equipment-cost').value) || 0;
+            const batchSize = parseFloat(document.getElementById('batch-size').value) || 1;
+            const productionTime = parseFloat(document.getElementById('production-time').value) || 1;
+            const powerConsumption = parseFloat(document.getElementById('power-consumption').value) || 0;
+            const yieldRate = parseFloat(document.getElementById('yield-rate').value) || 100;
+            
+            // 计算各项成本
+            const materialCostTotal = materialCost * batchSize;
+            const powerCostTotal = powerCost * powerConsumption * productionTime;
+            const laborCostTotal = laborCost * productionTime;
+            const equipmentCostTotal = equipmentCost * productionTime;
+            
+            // 计算总成本和单位成本
+            const totalCost = materialCostTotal + powerCostTotal + laborCostTotal + equipmentCostTotal;
+            const effectiveBatchSize = batchSize * (yieldRate / 100);
+            const unitCost = totalCost / effectiveBatchSize;
+            
+            // 更新显示
+            document.getElementById('material-cost-result').textContent = materialCostTotal.toFixed(2);
+            document.getElementById('power-cost-result').textContent = powerCostTotal.toFixed(2);
+            document.getElementById('labor-cost-result').textContent = laborCostTotal.toFixed(2);
+            document.getElementById('equipment-cost-result').textContent = equipmentCostTotal.toFixed(2);
+            document.getElementById('total-cost-result').textContent = totalCost.toFixed(2);
+            document.getElementById('unit-cost-result').textContent = unitCost.toFixed(2);
+            
+            // 显示成本分析区域
+            const costAnalysis = document.getElementById('cost-analysis');
+            costAnalysis.style.display = 'block';
+            
+            // 创建成本分解饼图
+            createCostBreakdownChart({
+                material: materialCostTotal,
+                power: powerCostTotal,
+                labor: laborCostTotal,
+                equipment: equipmentCostTotal
+            });
+            
+            // 添加日志
+            addLog(`成本计算完成 - 总成本: ${totalCost.toFixed(2)}元, 单位成本: ${unitCost.toFixed(2)}元/kg`);
+            addLog(`良品率: ${yieldRate}%, 有效产量: ${effectiveBatchSize.toFixed(1)}kg`);
+        }
+        
+        // 创建成本分解图表
+        function createCostBreakdownChart(costs) {
+            const ctx = document.getElementById('cost-breakdown-chart');
+            if (!ctx) return;
+            
+            // 销毁现有图表
+            if (window.costChart) {
+                window.costChart.destroy();
+            }
+            
+            const data = {
+                labels: ['原料成本', '电力成本', '人工成本', '设备折旧'],
+                datasets: [{
+                    data: [costs.material, costs.power, costs.labor, costs.equipment],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 205, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            };
+            
+            const options = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#ffffff',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value.toFixed(2)}元 (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: 10
+                }
+            };
+            
+            window.costChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: options
+            });
+        }
+        
+        // 添加日志条目
+        function addLog(message) {
+            const logContainer = document.getElementById('log-container');
+            const now = new Date();
+            const timeString = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `<span class="log-time">${timeString}</span><span class="log-message">${message}</span>`;
+            
+            logContainer.prepend(logEntry);
+            
+            // 保持日志条数
+            if (logContainer.children.length > 15) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+        
+        // 初始化MES系统图表
+        function initMESCharts() {
+            // 质量趋势图表
+            const qualityCtx = document.getElementById('quality-trend-chart');
+            if (qualityCtx) {
+                const qualityChart = new Chart(qualityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                        datasets: [{
+                            label: '合格率',
+                            data: [94.5, 96.2, 95.8, 97.1, 96.8, 98.2],
+                            borderColor: '#00ff88',
+                            backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    font: {
+                                        size: 10
+                                    }
+                                },
+                                min: 90,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 能耗监控图表
+            const energyCtx = document.getElementById('energy-consumption-chart');
+            if (energyCtx) {
+                const energyChart = new Chart(energyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                        datasets: [{
+                            label: '能耗 (MWh)',
+                            data: [28.5, 31.2, 29.8, 33.1, 30.5, 25.8, 22.3],
+                            backgroundColor: 'rgba(0, 255, 255, 0.6)',
+                            borderColor: '#00ffff',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    font: {
+                                        size: 10
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // 更新MES系统数据
+        function updateMESData() {
+            // 模拟实时数据更新
+            const updateValue = (id, baseValue, variance) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    const newValue = baseValue + (Math.random() - 0.5) * variance;
+                    element.textContent = newValue.toFixed(1);
+                }
+            };
+            
+            // 更新生产进度
+            const progressBar = document.querySelector('.progress-fill');
+            if (progressBar) {
+                const currentProgress = parseFloat(progressBar.style.width) || 75;
+                const newProgress = Math.min(100, currentProgress + Math.random() * 0.5);
+                progressBar.style.width = newProgress + '%';
+            }
+        }
+        
+        // 初始化系统
+        window.onload = function() {
+            try {
+                console.log('开始初始化系统...');
+                
+                // 初始化3D场景
+                const threeJS = initThreeJS();
+                if (threeJS) {
+                    console.log('3D场景初始化成功');
+                    addLog('3D模型加载成功');
+                } else {
+                    console.error('3D场景初始化失败');
+                    addLog('3D模型加载失败，请检查浏览器兼容性');
+                }
+                
+                // 初始化图表
+                initCharts();
+                console.log('图表初始化完成');
+                addLog('数据图表初始化完成');
+                
+                // 初始化MES系统图表
+                setTimeout(() => {
+                    initMESCharts();
+                    console.log('MES系统图表初始化完成');
+                    addLog('MES系统模块加载完成');
+                }, 500);
+                
+                // 设置事件监听器
+                setupEventListeners();
+                console.log('事件监听器设置完成');
+                
+                // 启动MES数据更新
+                setInterval(updateMESData, 5000);
+                
+                // 初始日志
+                setTimeout(() => {
+                    addLog('系统准备就绪，等待用户操作');
+                    addLog('MES制造执行系统已连接');
+                }, 1000);
+                
+            } catch (error) {
+                console.error('系统初始化错误:', error);
+                addLog('系统初始化出现错误: ' + error.message);
+            }
+        };
+    </script>
+</body>
+</html>

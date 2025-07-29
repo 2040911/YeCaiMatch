@@ -1,0 +1,182 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>导航菜单测试页面</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        h2 {
+            color: #444;
+            margin-top: 30px;
+        }
+        .menu-display {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .menu-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #4f8cc9;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #3a7ab8;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+        }
+        .mobile-view {
+            border: 2px dashed #999;
+            padding: 10px;
+            margin-top: 20px;
+            max-width: 375px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>导航菜单测试页面</h1>
+        
+        <div class="status" id="loginStatus">
+            登录状态: 未登录
+        </div>
+        
+        <h2>PC端菜单排列</h2>
+        <div class="menu-display">
+            <div class="menu-item">首页</div>
+            <div class="menu-item" id="userMenuItem" style="display:none;">用户 (显示用户名)</div>
+            <div class="menu-item">团队介绍</div>
+            <div class="menu-item">沙盘</div>
+            <div class="menu-item">图库</div>
+            <div class="menu-item">文件管理</div>
+            <div class="menu-item">联系我们</div>
+        </div>
+        
+        <h2>移动端菜单排列</h2>
+        <div class="mobile-view">
+            <div class="menu-display">
+                <div class="menu-item">首页</div>
+                <div class="menu-item" id="userMenuItemMobile" style="display:none;">用户 (显示用户名)</div>
+                <div class="menu-item">团队介绍</div>
+                <div class="menu-item">沙盘</div>
+                <div class="menu-item">图库</div>
+                <div class="menu-item">文件管理</div>
+                <div class="menu-item">联系我们</div>
+            </div>
+        </div>
+        
+        <h2>测试功能</h2>
+        <button class="btn" onclick="simulateLogin()">模拟登录</button>
+        <button class="btn" onclick="simulateLogout()">模拟登出</button>
+        <a class="btn" href="index.html">查看首页</a>
+        
+        <div class="status">
+            <p>说明：</p>
+            <ul>
+                <li>此页面用于测试导航菜单的排列问题</li>
+                <li>PC端和移动端菜单项已保持一致</li>
+                <li>登录后会显示用户菜单项</li>
+                <li>登录后会隐藏登录按钮</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+        });
+        
+        // 检查登录状态
+        function checkLoginStatus() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const username = sessionStorage.getItem('username');
+            const loginStatus = document.getElementById('loginStatus');
+            const userMenuItem = document.getElementById('userMenuItem');
+            const userMenuItemMobile = document.getElementById('userMenuItemMobile');
+            
+            if (isLoggedIn === 'true' && username) {
+                loginStatus.textContent = `登录状态: 已登录 (用户名: ${username})`;
+                loginStatus.style.backgroundColor = '#d4edda';
+                
+                // 显示用户菜单
+                if (userMenuItem) {
+                    userMenuItem.textContent = `用户 (${username})`;
+                    userMenuItem.style.display = 'block';
+                }
+                
+                // 显示移动端用户菜单
+                if (userMenuItemMobile) {
+                    userMenuItemMobile.textContent = `用户 (${username})`;
+                    userMenuItemMobile.style.display = 'block';
+                }
+            } else {
+                loginStatus.textContent = '登录状态: 未登录';
+                loginStatus.style.backgroundColor = '#f8d7da';
+                
+                // 隐藏用户菜单
+                if (userMenuItem) {
+                    userMenuItem.style.display = 'none';
+                }
+                
+                // 隐藏移动端用户菜单
+                if (userMenuItemMobile) {
+                    userMenuItemMobile.style.display = 'none';
+                }
+            }
+        }
+        
+        // 模拟登录
+        function simulateLogin() {
+            sessionStorage.setItem('isLoggedIn', 'true');
+            sessionStorage.setItem('username', 'admin');
+            checkLoginStatus();
+            alert('已模拟登录成功！用户名: admin');
+        }
+        
+        // 模拟登出
+        function simulateLogout() {
+            sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('username');
+            checkLoginStatus();
+            alert('已登出！');
+        }
+    </script>
+</body>
+</html>
